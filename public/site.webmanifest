@@ -1,0 +1,22 @@
+{
+  "name": "Codentor",
+  "short_name": "Codentor",
+  "description": "Master Code. Build Future. Your all-in-one platform to learn, practice, and excel in programming.",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "theme_color": "#10b981",
+  "background_color": "#000000",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}

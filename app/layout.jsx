@@ -30,8 +30,13 @@ export const metadata = {
     images: ["/hero.png"],
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: "/apple-touch-icon.png",
   },
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({ children }) {
@@ -43,6 +48,11 @@ export default function RootLayout({ children }) {
     >
       <html lang="en">
         <head>
+          <link rel="icon" href="/favicon.ico?v=2" sizes="any" />
+          <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
+          <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2" />
+          <link rel="manifest" href="/site.webmanifest?v=2" />
+          <meta name="theme-color" content="#10b981" />
           <meta property="og:type" content={metadata.openGraph.type} />
           <meta property="og:url" content={metadata.openGraph.url} />
           <meta property="og:title" content={metadata.openGraph.title} />
@@ -50,7 +60,6 @@ export default function RootLayout({ children }) {
             property="og:description"
             content={metadata.openGraph.description}
           />
-          <meta property="og:image" content={metadata.openGraph.image} />
         </head>
         <body className={kanit.className}>
           {/* Retain ClientLayout to manage conditional Sidebar rendering */}
