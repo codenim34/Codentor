@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { connect } from "@/lib/mongodb/mongoose";
 import Quest from "@/lib/models/questModel";
 import Attempt from "@/lib/models/attemptModel";

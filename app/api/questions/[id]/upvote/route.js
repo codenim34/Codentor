@@ -2,7 +2,7 @@
 
 import Question from "@/lib/models/questionModel";
 import { connect } from "@/lib/mongodb/mongoose";
-import { auth } from "@clerk/nextjs"; // Adjust based on your auth provider
+import { auth } from "@clerk/nextjs/server"; // Adjust based on your auth provider
 import { NextResponse } from "next/server";
 
 export async function POST(request, { params }) {

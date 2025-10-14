@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { connect } from "@/lib/mongodb/mongoose";
 import Attempt from "@/lib/models/attemptModel";
 import { submitQuestAttempt } from "@/lib/actions/quest";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 
 export async function POST(request, { params }) {
   try {

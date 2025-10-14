@@ -48,9 +48,8 @@ export default clerkMiddleware(async (auth, request) => {
       return NextResponse.redirect(new URL(loginPath, request.url));
     }
 
-    const [username, password] = Buffer.from(credentials, "base64")
-      .toString()
-      .split(":");
+    // Use atob for Edge Runtime compatibility instead of Buffer
+    const [username, password] = atob(credentials).split(":");
 
     if (username !== "admin" || password !== "admin123") {
       return NextResponse.redirect(new URL(loginPath, request.url));
@@ -68,5 +67,10 @@ export default clerkMiddleware(async (auth, request) => {
 });
 
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+  ],
 };

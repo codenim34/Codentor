@@ -2,7 +2,7 @@ import { connect } from "@/lib/mongodb/mongoose";
 import Attempt from "@/lib/models/attemptModel";
 import User from "@/lib/models/userModel";
 import { NextResponse } from "next/server";
-import { currentUser } from "@clerk/nextjs";
+import { currentUser } from "@clerk/nextjs/server";
 
 export async function GET() {
   try {
