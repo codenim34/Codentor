@@ -1,7 +1,14 @@
-import { authMiddleware } from "@clerk/nextjs";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-export default async function middleware(request) {
+const isPublicRoute = createRouteMatcher([
+  '/',
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+  '/api/webhooks(.*)'
+]);
+
+export default clerkMiddleware(async (auth, request) => {
   // Check if the request is for admin routes
   if (request.nextUrl.pathname.startsWith('/admin') || 
       request.nextUrl.pathname.startsWith('/api/admin')) {
@@ -13,7 +20,7 @@ export default async function middleware(request) {
     // Allow access to login page and auth endpoint
     if (request.nextUrl.pathname === loginPath || 
         request.nextUrl.pathname === authPath) {
-      return;
+      return NextResponse.next();
     }
 
     // Check for admin authentication
@@ -49,17 +56,16 @@ export default async function middleware(request) {
       return NextResponse.redirect(new URL(loginPath, request.url));
     }
 
-    return;
+    return NextResponse.next();
   }
 
-  // For non-admin routes, use Clerk authentication
-  const clerkMiddleware = authMiddleware({
-    publicRoutes: ["/", "sign-in", "sign-up"],
-    ignoredRoutes: ["/api/webhooks(.*)"],
-  });
+  // For non-admin routes, protect routes that are not public
+  if (!isPublicRoute(request)) {
+    await auth.protect();
+  }
 
-  return clerkMiddleware(request);
-}
+  return NextResponse.next();
+});
 
 export const config = {
   matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
