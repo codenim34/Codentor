@@ -52,10 +52,10 @@ export default function RootLayout({ children }) {
           />
           <meta property="og:image" content={metadata.openGraph.image} />
         </head>
-        <body className={kanit.className}>
+        <body className={`${kanit.className} bg-black`}>
           {/* Retain ClientLayout to manage conditional Sidebar rendering */}
           <ClientLayout>
-            <main>
+            <main className="bg-gradient-to-br from-black via-green-950 to-black min-h-screen">
               {/* Keep the new background styling from the incoming changes */}
               <div className="flex items-start justify-center min-h-screen min-w-full">
                 <div className="w-full h-full">{children}</div>

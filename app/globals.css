@@ -18,6 +18,12 @@
 body {
   font-family: "Inter", sans-serif;
   line-height: 1.6;
+  background: linear-gradient(135deg, #000000, #064e3b, #000000);
+  min-height: 100vh;
+}
+
+html {
+  scroll-padding-top: 64px; /* Height of fixed header */
 }
 
 /* Hero Section */
