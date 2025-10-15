@@ -7,7 +7,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ClientLayout from "./components/ClientLayout";
 import "./globals.css";
-import AccessibilityFloatingIcon from './components/AccessibilityFloatingIcon';
 const kanit = Kanit({
   subsets: ["latin"],
   display: "swap",
@@ -62,7 +61,7 @@ export default function RootLayout({ children }) {
               </div>
             </main>
           </ClientLayout>
-          <AccessibilityFloatingIcon />
+          
           <ToastContainer />
           <Analytics />
           <SpeedInsights />
