@@ -236,12 +236,12 @@ export default function RoadmapsPage() {
                       <div className="mt-4">
                         <div className="flex items-center justify-between mb-1.5">
                           <span className="text-xs font-medium text-gray-400">Progress</span>
-                          <span className="text-xs font-medium text-deepGreen-400">{progress}%</span>
+                          <span className="text-xs font-semibold text-deepGreen-300">{progress}%</span>
                         </div>
-                        <div className="w-full h-2 bg-codeBlack-800 rounded-full overflow-hidden relative">
-                          {/* Animated background */}
+                        <div className="w-full h-3 bg-codeBlack-800/90 border border-deepGreen-800/40 rounded-full overflow-hidden relative">
+                          {/* Subtle animated backdrop */}
                           <div 
-                            className="absolute inset-0 bg-gradient-to-r from-deepGreen-700 via-deepGreen-600 to-deepGreen-700 animate-gradient"
+                            className="absolute inset-0 opacity-20 bg-gradient-to-r from-deepGreen-700 via-deepGreen-600 to-deepGreen-700 animate-gradient"
                             style={{
                               width: '200%',
                               transform: 'translateX(-50%)',
@@ -249,21 +249,26 @@ export default function RoadmapsPage() {
                           />
                           {/* Actual progress bar */}
                           <div 
-                            className="relative h-full transition-all duration-300 ease-out"
+                            className="relative h-full rounded-full transition-[width] duration-500 ease-out bg-gradient-to-r from-emerald-400 to-emerald-600 shadow-[0_0_12px_rgba(16,185,129,0.45)]"
                             style={{ 
                               width: `${progress}%`,
-                              background: 'rgba(16,185,129,0.25)',
-                              boxShadow: 'inset 0 0 10px rgba(16,185,129,0.4)',
+                              minWidth: progress > 0 ? '8px' : '0px',
                             }}
                           >
                             {/* Shine effect */}
                             <div 
-                              className="absolute inset-0 bg-gradient-to-r from-transparent via-deepGreen-300 to-transparent opacity-30"
+                              className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-20"
                               style={{
                                 transform: 'skewX(-45deg) translateX(-100%)',
-                                animation: 'shine 2s infinite',
+                                animation: 'shine 2.2s infinite',
                               }}
                             />
+                            {/* Inline percentage label (visible on wider segments) */}
+                            {progress >= 12 && (
+                              <span className="pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-[10px] leading-none font-semibold text-white/90 drop-shadow">
+                                {progress}%
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>
