@@ -284,24 +284,31 @@ export default function QuestsPage() {
           past: []
         };
 
-        questsData.forEach(quest => {
-          const startTime = new Date(quest.startTime);
-          const endTime = new Date(quest.endTime);
+        // Handle quests data
+        if (Array.isArray(questsData)) {
+          questsData.forEach(quest => {
+            const startTime = new Date(quest.startTime);
+            const endTime = new Date(quest.endTime);
 
-          if (startTime > now) {
-            categorizedQuests.upcoming.push(quest);
-          } else if (endTime < now) {
-            categorizedQuests.past.push(quest);
-          } else {
-            categorizedQuests.active.push(quest);
-          }
-        });
+            if (startTime > now) {
+              categorizedQuests.upcoming.push(quest);
+            } else if (endTime < now) {
+              categorizedQuests.past.push(quest);
+            } else {
+              categorizedQuests.active.push(quest);
+            }
+          });
+        }
 
         setQuests(categorizedQuests);
-        setLeaderboard(leaderboardData);
+        
+        // Handle leaderboard data - ensure it's an array
+        setLeaderboard(Array.isArray(leaderboardData) ? leaderboardData : []);
+        
         setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
+        setLeaderboard([]); // Set empty array on error
         setLoading(false);
       }
     };

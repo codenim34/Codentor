@@ -2,7 +2,7 @@ import { connect } from "@/lib/mongodb/mongoose";
 import Attempt from "@/lib/models/attemptModel";
 import User from "@/lib/models/userModel";
 import { NextResponse } from "next/server";
-import { currentUser } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 
 export async function GET() {
   try {
@@ -31,8 +31,8 @@ export async function GET() {
       }
     ]);
 
-    // Get current user for their IDs
-    const user = await currentUser();
+    // Get current user ID
+    const { userId } = auth();
     
     // Get all unique user IDs from leaderboard
     const userIds = leaderboardData.map(entry => entry._id);
@@ -47,7 +47,7 @@ export async function GET() {
     const leaderboard = leaderboardData.map((entry, index) => ({
       ...entry,
       rank: index + 1,
-      isCurrentUser: user?.id === entry._id,
+      isCurrentUser: userId === entry._id,
       username: userMap.get(entry._id) || entry._id.slice(0, 8) + "..." // Fallback to truncated ID if username not found
     }));
 
