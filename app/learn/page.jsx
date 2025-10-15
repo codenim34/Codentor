@@ -22,6 +22,9 @@ const LearnPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState("latest");
   const [isLoading, setIsLoading] = useState(false);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [aiProblem, setAiProblem] = useState("");
+  const [isAIProcessing, setIsAIProcessing] = useState(false);
   const router = useRouter();
 
   const formatDuration = (duration) => {
@@ -223,6 +226,71 @@ const LearnPage = () => {
   useEffect(() => {
     fetchVideos();
   }, []);
+
+  const handleAISearch = async () => {
+    if (!aiProblem.trim()) return;
+
+    setIsAIProcessing(true);
+    try {
+      // Call the AI API to extract search keywords
+      const response = await axios.post('/api/ai-search', {
+        userProblem: aiProblem,
+      });
+
+      const { searchKeywords } = response.data;
+
+      // Set the search term and trigger search
+      setSearchTerm(searchKeywords);
+      setShowAIAssistant(false);
+      setAiProblem("");
+
+      // Fetch videos based on AI-generated keywords
+      await fetchVideosByAISearch(searchKeywords);
+    } catch (error) {
+      console.error('Error with AI search:', error);
+      alert('Failed to process your request. Please try again.');
+    } finally {
+      setIsAIProcessing(false);
+    }
+  };
+
+  const fetchVideosByAISearch = async (keywords) => {
+    setIsLoading(true);
+    setActiveFilter("search");
+    try {
+      const promises = CHANNEL_IDS.map((channelId) =>
+        axios.get(`https://www.googleapis.com/youtube/v3/search`, {
+          params: {
+            part: "snippet",
+            channelId: channelId,
+            maxResults: 12,
+            order: "relevance",
+            q: keywords,
+            key: getRandomApiKey(),
+          },
+        })
+      );
+      const results = await Promise.all(promises);
+      const allVideos = results.flatMap((result) => result.data.items);
+      
+      const videoIds = allVideos.map(video => video.id.videoId);
+      const videoDetails = await getVideoDetails(videoIds);
+      
+      const videosWithDuration = allVideos.map(video => {
+        const details = videoDetails.find(detail => detail.id === video.id.videoId);
+        return {
+          ...video,
+          contentDetails: details?.contentDetails || null,
+        };
+      });
+      
+      setVideos(videosWithDuration);
+    } catch (error) {
+      console.error("Error fetching videos by AI search", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     const style = document.createElement('style');
@@ -445,6 +513,121 @@ const LearnPage = () => {
           )}
         </div>
       </main>
+
+      {/* Floating AI Assistant Button */}
+      <button
+        onClick={() => setShowAIAssistant(true)}
+        className="fixed bottom-8 right-8 z-50 bg-gradient-to-r from-emerald-600 to-green-600 text-white p-4 rounded-full shadow-2xl hover:shadow-emerald-500/50 hover:scale-110 transition-all duration-300 group"
+        title="AI Assistant"
+      >
+        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+        </svg>
+        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+          AI
+        </span>
+      </button>
+
+      {/* AI Assistant Modal */}
+      {showAIAssistant && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+          <div className="bg-gradient-to-br from-gray-900 to-gray-950 border border-emerald-500/30 rounded-2xl shadow-2xl max-w-2xl w-full p-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="bg-emerald-500/20 p-3 rounded-xl">
+                  <svg className="w-6 h-6 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent">
+                    AI Learning Assistant
+                  </h2>
+                  <p className="text-gray-400 text-sm">Tell me your coding problem, I'll find tutorials for you</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setShowAIAssistant(false);
+                  setAiProblem("");
+                }}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Input Area */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  What coding problem are you facing?
+                </label>
+                <textarea
+                  value={aiProblem}
+                  onChange={(e) => setAiProblem(e.target.value)}
+                  placeholder="Example: I'm getting a 'Cannot read property of undefined' error in my React component when trying to map over an array..."
+                  className="w-full h-32 px-4 py-3 bg-gray-800/50 border border-emerald-900/30 rounded-xl focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20 text-white placeholder-gray-500 resize-none"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && e.ctrlKey && aiProblem.trim()) {
+                      handleAISearch();
+                    }
+                  }}
+                />
+                <p className="text-xs text-gray-500 mt-2">
+                  💡 Tip: Be specific about your error, language, or framework
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <button
+                  onClick={handleAISearch}
+                  disabled={!aiProblem.trim() || isAIProcessing}
+                  className={`flex-1 py-3 px-6 bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-xl font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${
+                    !aiProblem.trim() || isAIProcessing
+                      ? 'opacity-50 cursor-not-allowed'
+                      : 'hover:from-emerald-700 hover:to-green-700 hover:shadow-lg hover:shadow-emerald-500/30'
+                  }`}
+                >
+                  {isAIProcessing ? (
+                    <>
+                      <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      Find Tutorials
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowAIAssistant(false);
+                    setAiProblem("");
+                  }}
+                  className="py-3 px-6 bg-gray-800/50 text-gray-300 rounded-xl font-semibold hover:bg-gray-700/50 transition-all duration-200"
+                >
+                  Cancel
+                </button>
+              </div>
+
+              <p className="text-xs text-gray-500 text-center">
+                Press <kbd className="px-2 py-1 bg-gray-800 rounded">Ctrl</kbd> + <kbd className="px-2 py-1 bg-gray-800 rounded">Enter</kbd> to search
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
