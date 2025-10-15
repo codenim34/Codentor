@@ -1,7 +1,7 @@
-import { authMiddleware } from "@clerk/nextjs";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-export default async function middleware(request) {
+export default clerkMiddleware((auth, request) => {
   // Check if the request is for admin routes
   if (request.nextUrl.pathname.startsWith('/admin') || 
       request.nextUrl.pathname.startsWith('/api/admin')) {
@@ -52,14 +52,11 @@ export default async function middleware(request) {
     return;
   }
 
-  // For non-admin routes, use Clerk authentication
-  const clerkMiddleware = authMiddleware({
-    publicRoutes: ["/", "sign-in", "sign-up"],
-    ignoredRoutes: ["/api/webhooks(.*)"],
-  });
-
-  return clerkMiddleware(request);
-}
+  // Clerk middleware handles authentication for non-admin routes automatically
+  // Public routes are defined in the config below
+}, {
+  publicRoutes: ["/", "/sign-in(.*)", "/sign-up(.*)", "/api/webhooks(.*)"]
+});
 
 export const config = {
   matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
