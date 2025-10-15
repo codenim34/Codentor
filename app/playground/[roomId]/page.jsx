@@ -235,13 +235,32 @@ const RoomPage = () => {
       const startTime = performance.now();
       
       const result = await executeCode(language, code);
+      console.log('Execution result:', result);
       
       const endTime = performance.now();
       setExecutionTime(Math.round(endTime - startTime));
       setExecutionTimestamp(new Date());
       
-      setOutput(result.run.output.split("\n"));
-      setIsError(result.run.stderr ? true : false);
+      // Handle different response structures
+      let output = '';
+      let hasError = false;
+      
+      if (result.run) {
+        // Piston API v2 format
+        output = result.run.output || '';
+        hasError = !!result.run.stderr;
+      } else if (result.stdout || result.stderr) {
+        // Alternative format
+        output = result.stdout || result.stderr || '';
+        hasError = !!result.stderr;
+      } else if (typeof result === 'string') {
+        output = result;
+      } else {
+        output = JSON.stringify(result, null, 2);
+      }
+      
+      setOutput(output.split("\n"));
+      setIsError(hasError);
     } catch (error) {
       console.error("Error running code:", error);
       setOutput([error.message || "An error occurred while running the code"]);
@@ -304,14 +323,14 @@ const RoomPage = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <div className="flex items-center justify-between p-4 border-b bg-white">
+    <div className="flex flex-col h-screen bg-gradient-to-br from-black via-codeBlack-900 to-deepGreen-950">
+      <div className="flex items-center justify-between p-4 border-b border-deepGreen-800/30 bg-codeBlack-900/80 backdrop-blur-sm">
         <div className="flex items-center space-x-4">
-          <h1 className="text-xl font-semibold">Room: {roomId}</h1>
+          <h1 className="text-xl font-semibold text-white">Code Studio: <span className="text-deepGreen-400">{roomId}</span></h1>
           <div className="flex items-center space-x-2">
             <CollaboratorAvatars collaborators={collaborators} />
-            <span className="text-sm text-gray-500">
-              {collaborators.length} {collaborators.length === 1 ? 'user' : 'users'} active
+            <span className="text-sm text-gray-400">
+              {collaborators.length} {collaborators.length === 1 ? 'developer' : 'developers'} active
             </span>
           </div>
         </div>
@@ -320,8 +339,8 @@ const RoomPage = () => {
             onClick={handleCopyRoomCode}
             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 flex items-center space-x-2
               ${showCopySuccess.code 
-                ? 'bg-green-500/20 text-green-500 hover:bg-green-500/30' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-deepGreen-500/20 text-deepGreen-400 hover:bg-deepGreen-500/30' 
+                : 'bg-codeBlack-800 text-gray-300 hover:bg-codeBlack-700 border border-deepGreen-800/30'
               }`}
           >
             {showCopySuccess.code ? (
@@ -344,8 +363,8 @@ const RoomPage = () => {
             onClick={handleCopyShareLink}
             className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all duration-200 flex items-center space-x-2
               ${showCopySuccess.link 
-                ? 'bg-green-500/20 text-green-500 hover:bg-green-500/30' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-deepGreen-500/20 text-deepGreen-400 hover:bg-deepGreen-500/30' 
+                : 'bg-codeBlack-800 text-gray-300 hover:bg-codeBlack-700 border border-deepGreen-800/30'
               }`}
           >
             {showCopySuccess.link ? (
@@ -409,7 +428,7 @@ const RoomPage = () => {
             />
           </div>
           {showOutput && (
-            <div className="w-1/3 overflow-hidden bg-gray-900 border-l border-gray-700">
+            <div className="w-1/3 overflow-hidden bg-codeBlack-950 border-l border-deepGreen-800/30">
               <OutputPanel
                 output={output}
                 isError={isError}

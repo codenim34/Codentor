@@ -7,7 +7,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ClientLayout from "./components/ClientLayout";
 import "./globals.css";
-import AccessibilityFloatingIcon from './components/AccessibilityFloatingIcon';
 const kanit = Kanit({
   subsets: ["latin"],
   display: "swap",
@@ -61,17 +60,17 @@ export default function RootLayout({ children }) {
             content={metadata.openGraph.description}
           />
         </head>
-        <body className={kanit.className}>
+        <body className={`${kanit.className} bg-black`}>
           {/* Retain ClientLayout to manage conditional Sidebar rendering */}
           <ClientLayout>
-            <main>
+            <main className="bg-gradient-to-br from-black via-green-950 to-black min-h-screen">
               {/* Keep the new background styling from the incoming changes */}
               <div className="flex items-start justify-center min-h-screen min-w-full">
                 <div className="w-full h-full">{children}</div>
               </div>
             </main>
           </ClientLayout>
-          <AccessibilityFloatingIcon />
+          
           <ToastContainer />
           <Analytics />
           <SpeedInsights />

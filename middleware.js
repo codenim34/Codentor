@@ -1,14 +1,7 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-const isPublicRoute = createRouteMatcher([
-  '/',
-  '/sign-in(.*)',
-  '/sign-up(.*)',
-  '/api/webhooks(.*)'
-]);
-
-export default clerkMiddleware(async (auth, request) => {
+export default clerkMiddleware((auth, request) => {
   // Check if the request is for admin routes
   if (request.nextUrl.pathname.startsWith('/admin') || 
       request.nextUrl.pathname.startsWith('/api/admin')) {
@@ -20,7 +13,7 @@ export default clerkMiddleware(async (auth, request) => {
     // Allow access to login page and auth endpoint
     if (request.nextUrl.pathname === loginPath || 
         request.nextUrl.pathname === authPath) {
-      return NextResponse.next();
+      return;
     }
 
     // Check for admin authentication
@@ -48,29 +41,23 @@ export default clerkMiddleware(async (auth, request) => {
       return NextResponse.redirect(new URL(loginPath, request.url));
     }
 
-    // Use atob for Edge Runtime compatibility instead of Buffer
-    const [username, password] = atob(credentials).split(":");
+    const [username, password] = Buffer.from(credentials, "base64")
+      .toString()
+      .split(":");
 
     if (username !== "admin" || password !== "admin123") {
       return NextResponse.redirect(new URL(loginPath, request.url));
     }
 
-    return NextResponse.next();
+    return;
   }
 
-  // For non-admin routes, protect routes that are not public
-  if (!isPublicRoute(request)) {
-    await auth.protect();
-  }
-
-  return NextResponse.next();
+  // Clerk middleware handles authentication for non-admin routes automatically
+  // Public routes are defined in the config below
+}, {
+  publicRoutes: ["/", "/sign-in(.*)", "/sign-up(.*)", "/api/webhooks(.*)"]
 });
 
 export const config = {
-  matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    // Always run for API routes
-    '/(api|trpc)(.*)',
-  ],
+  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
 };

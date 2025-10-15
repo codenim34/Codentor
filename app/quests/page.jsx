@@ -20,10 +20,10 @@ import { QuestPageLoader } from '@/app/components/fun-loaders';
 
 const LeaderboardCard = ({ leaderboard }) => {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="bg-codeBlack-900/50 rounded-xl border border-deepGreen-800/30 p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-          <FiTrophy className="text-yellow-500" />
+        <h2 className="text-xl font-bold text-white flex items-center gap-2">
+          <FiTrophy className="text-deepGreen-400" />
           Leaderboard
         </h2>
       </div>
@@ -32,34 +32,34 @@ const LeaderboardCard = ({ leaderboard }) => {
         {leaderboard.map((entry) => (
           <div 
             key={entry._id}
-            className={`flex items-center justify-between p-3 rounded-lg ${
+            className={`flex items-center justify-between p-3 rounded-lg transition-colors ${
               entry.isCurrentUser 
-                ? 'bg-blue-50 border border-blue-100' 
-                : 'hover:bg-gray-50'
+                ? 'bg-deepGreen-950/40 border border-deepGreen-700/50' 
+                : 'hover:bg-codeBlack-800/50 border border-deepGreen-800/20'
             }`}
           >
             <div className="flex items-center space-x-3">
               <span className={`w-6 h-6 flex items-center justify-center rounded-full text-sm font-medium
-                ${entry.rank <= 3 ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'}`}>
+                ${entry.rank <= 3 ? 'bg-deepGreen-500/20 text-deepGreen-300' : 'bg-codeBlack-800 text-gray-300'}`}>
                 {entry.rank}
               </span>
               <div>
-                <p className="font-medium text-gray-900">{entry.username}</p>
-                <div className="flex items-center text-sm text-gray-500 space-x-2">
+                <p className="font-medium text-gray-100">{entry.username}</p>
+                <div className="flex items-center text-sm text-gray-400 space-x-2">
                   <span className="flex items-center">
-                    <FiTarget className="mr-1" />
+                    <FiTarget className="mr-1 text-deepGreen-400" />
                     {entry.totalScore} pts
                   </span>
                   <span>•</span>
                   <span className="flex items-center">
-                    <FiCheck className="mr-1" />
+                    <FiCheck className="mr-1 text-deepGreen-400" />
                     {entry.questsCompleted} quests
                   </span>
                 </div>
               </div>
             </div>
             <div className="text-right">
-              <span className="text-sm font-medium text-gray-900">
+              <span className="text-sm font-medium text-gray-100">
                 {(entry.averageScore * 100).toFixed(0)}%
               </span>
             </div>
@@ -75,7 +75,7 @@ const QuestSkeleton = () => {
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 relative overflow-hidden"
+      className="bg-codeBlack-900/50 rounded-xl border border-deepGreen-800/30 p-6 relative overflow-hidden"
     >
       <motion.div
         className="absolute inset-0 -translate-x-full"
@@ -88,18 +88,18 @@ const QuestSkeleton = () => {
           ease: "linear"
         }}
         style={{
-          background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent)"
+          background: "linear-gradient(90deg, transparent, rgba(16,185,129,0.15), transparent)"
         }}
       />
-      <div className="h-4 w-24 bg-gray-200 rounded mb-4" />
-      <div className="h-8 w-3/4 bg-gray-200 rounded mb-4" />
+      <div className="h-4 w-24 bg-deepGreen-900/30 rounded mb-4" />
+      <div className="h-8 w-3/4 bg-deepGreen-900/30 rounded mb-4" />
       <div className="space-y-2">
-        <div className="h-4 w-full bg-gray-200 rounded" />
-        <div className="h-4 w-5/6 bg-gray-200 rounded" />
+        <div className="h-4 w-full bg-deepGreen-900/30 rounded" />
+        <div className="h-4 w-5/6 bg-deepGreen-900/30 rounded" />
       </div>
       <div className="mt-4 flex gap-2">
-        <div className="h-8 w-20 bg-gray-200 rounded" />
-        <div className="h-8 w-20 bg-gray-200 rounded" />
+        <div className="h-8 w-20 bg-deepGreen-900/30 rounded" />
+        <div className="h-8 w-20 bg-deepGreen-900/30 rounded" />
       </div>
     </motion.div>
   );
@@ -164,22 +164,22 @@ const QuestCard = ({ quest, status }) => {
   const canStart = status === 'active' && startTime <= now && endTime >= now;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 p-6 border border-gray-200 relative overflow-hidden">
+    <div className="bg-codeBlack-900/50 rounded-xl hover:shadow-green-glow transition-all duration-200 p-6 border border-deepGreen-800/30 relative overflow-hidden">
       {/* Status Badge */}
       <div className={`absolute top-0 right-0 w-24 text-center py-1 text-xs font-semibold transform rotate-45 translate-x-7 translate-y-4
-        ${status === 'upcoming' ? 'bg-blue-500 text-white' : 
-          status === 'active' ? 'bg-green-500 text-white' : 
-          'bg-gray-500 text-white'}`}>
+        ${status === 'upcoming' ? 'bg-deepGreen-700 text-white' : 
+          status === 'active' ? 'bg-deepGreen-500 text-white' : 
+          'bg-codeBlack-700 text-white'}`}>
         {status}
       </div>
 
       <div className="space-y-4">
         {/* Quest Header */}
         <div>
-          <h3 className="text-xl font-bold text-gray-900 mb-2">{quest.name}</h3>
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
+          <h3 className="text-xl font-bold text-white mb-2">{quest.name}</h3>
+          <div className="flex items-center space-x-2 text-sm text-gray-300">
             <FiAward className={`
-              ${quest.level === 'beginner' ? 'text-green-500' :
+              ${quest.level === 'beginner' ? 'text-deepGreen-400' :
                 quest.level === 'intermediate' ? 'text-yellow-500' :
                 'text-red-500'}`}
             />
@@ -190,19 +190,19 @@ const QuestCard = ({ quest, status }) => {
         {/* Quest Info */}
         <div className="grid grid-cols-2 gap-4 text-sm">
           <div className="flex items-center space-x-2">
-            <FiClock className="text-gray-400" />
-            <span>{quest.timeLimit} min</span>
+            <FiClock className="text-deepGreen-400" />
+            <span className="text-gray-300">{quest.timeLimit} min</span>
           </div>
           <div className="flex items-center space-x-2">
-            <FiBook className="text-gray-400" />
-            <span>{quest.questions.length} questions</span>
+            <FiBook className="text-deepGreen-400" />
+            <span className="text-gray-300">{quest.questions.length} questions</span>
           </div>
         </div>
 
         {/* Timeline */}
         <div className="space-y-2 text-sm">
-          <div className="flex items-center space-x-2 text-gray-600">
-            <FiCalendar className="text-gray-400" />
+          <div className="flex items-center space-x-2 text-gray-300">
+            <FiCalendar className="text-deepGreen-400" />
             <span>Starts: {startTime.toLocaleDateString('en-US', { 
               month: 'short', 
               day: 'numeric', 
@@ -210,8 +210,8 @@ const QuestCard = ({ quest, status }) => {
               minute: '2-digit'
             })}</span>
           </div>
-          <div className="flex items-center space-x-2 text-gray-600">
-            <FiCalendar className="text-gray-400" />
+          <div className="flex items-center space-x-2 text-gray-300">
+            <FiCalendar className="text-deepGreen-400" />
             <span>Ends: {endTime.toLocaleDateString('en-US', { 
               month: 'short', 
               day: 'numeric', 
@@ -225,7 +225,7 @@ const QuestCard = ({ quest, status }) => {
         {canStart && (
           <Link 
             href={`/quests/${quest._id}/attempt`}
-            className="block w-full text-center px-6 py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors duration-200"
+            className="block w-full text-center px-6 py-3 rounded-lg bg-deepGreen-600 text-white font-semibold hover:bg-deepGreen-700 transition-colors duration-200"
           >
             View Quest
           </Link>
@@ -284,24 +284,31 @@ export default function QuestsPage() {
           past: []
         };
 
-        questsData.forEach(quest => {
-          const startTime = new Date(quest.startTime);
-          const endTime = new Date(quest.endTime);
+        // Handle quests data
+        if (Array.isArray(questsData)) {
+          questsData.forEach(quest => {
+            const startTime = new Date(quest.startTime);
+            const endTime = new Date(quest.endTime);
 
-          if (startTime > now) {
-            categorizedQuests.upcoming.push(quest);
-          } else if (endTime < now) {
-            categorizedQuests.past.push(quest);
-          } else {
-            categorizedQuests.active.push(quest);
-          }
-        });
+            if (startTime > now) {
+              categorizedQuests.upcoming.push(quest);
+            } else if (endTime < now) {
+              categorizedQuests.past.push(quest);
+            } else {
+              categorizedQuests.active.push(quest);
+            }
+          });
+        }
 
         setQuests(categorizedQuests);
-        setLeaderboard(leaderboardData);
+        
+        // Handle leaderboard data - ensure it's an array
+        setLeaderboard(Array.isArray(leaderboardData) ? leaderboardData : []);
+        
         setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
+        setLeaderboard([]); // Set empty array on error
         setLoading(false);
       }
     };
@@ -314,7 +321,7 @@ export default function QuestsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <motion.div 
-            className="h-10 w-48 bg-gray-200 rounded"
+            className="h-10 w-48 bg-deepGreen-900/30 rounded"
             animate={{ opacity: [0.5, 0.8, 0.5] }}
             transition={{ duration: 1.5, repeat: Infinity }}
           />
@@ -336,12 +343,12 @@ export default function QuestsPage() {
         <div className="flex-1">
           {/* Header with Filter Toggle */}
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">Quests</h1>
+            <h1 className="text-2xl font-bold text-white">Quests</h1>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+              className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-200 bg-codeBlack-900/50 border border-deepGreen-800/30 rounded-lg hover:bg-codeBlack-800 transition-colors duration-200"
             >
-              <FiFilter className={`${showFilters ? "text-blue-500" : "text-gray-400"} transition-colors duration-200`} />
+              <FiFilter className={`${showFilters ? "text-deepGreen-400" : "text-gray-400"} transition-colors duration-200`} />
               <span>Filters</span>
             </button>
           </div>
@@ -350,22 +357,22 @@ export default function QuestsPage() {
           <FilterSection filters={filters} setFilters={setFilters} showFilters={showFilters} />
 
           {/* Tab Navigation */}
-          <div className="flex space-x-4 mb-8 border-b border-gray-200">
+          <div className="flex space-x-4 mb-8 border-b border-deepGreen-800/30">
             {['active', 'upcoming', 'past'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`pb-4 px-4 text-sm font-medium transition-colors duration-200 relative
                   ${activeTab === tab 
-                    ? 'text-blue-600 border-b-2 border-blue-600' 
-                    : 'text-gray-500 hover:text-gray-700'}`}
+                    ? 'text-deepGreen-400 border-b-2 border-deepGreen-500' 
+                    : 'text-gray-400 hover:text-gray-200'}`}
               >
                 <div className="flex items-center space-x-2">
                   {tab === 'active' && <FiClock />}
                   {tab === 'upcoming' && <FiCalendar />}
                   {tab === 'past' && <FiArchive />}
                   <span className="capitalize">{tab}</span>
-                  <span className="ml-2 bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs">
+                  <span className="ml-2 bg-codeBlack-800 text-gray-300 px-2 py-0.5 rounded-full text-xs">
                     {quests[tab].length}
                   </span>
                 </div>
@@ -381,9 +388,9 @@ export default function QuestsPage() {
               ))
             ) : (
               <div className="col-span-full text-center py-12">
-                <FiBook className="mx-auto h-12 w-12 text-gray-400" />
-                <h3 className="mt-2 text-sm font-medium text-gray-900">No {activeTab} quests found</h3>
-                <p className="mt-1 text-sm text-gray-500">
+                <FiBook className="mx-auto h-12 w-12 text-deepGreen-400" />
+                <h3 className="mt-2 text-sm font-medium text-white">No {activeTab} quests found</h3>
+                <p className="mt-1 text-sm text-gray-400">
                   Try adjusting your filters or check back later
                 </p>
               </div>

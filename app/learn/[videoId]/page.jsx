@@ -48,7 +48,7 @@ const VideoPage = ({ params }) => {
   }, [isDragging, handleMouseMove, handleMouseUp]);
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex flex-col bg-gray-100">
+    <div className="h-[calc(100vh-4rem)] flex flex-col bg-gradient-to-br from-black via-codeBlack-900 to-deepGreen-950">
       {/* Split View Container */}
       <div
         id="split-container"
@@ -67,10 +67,10 @@ const VideoPage = ({ params }) => {
 
         {/* Resizer */}
         <div
-          className="w-1 bg-gray-200 hover:bg-blue-500 cursor-col-resize relative group"
+          className="w-1 bg-codeBlack-800 hover:bg-deepGreen-500 cursor-col-resize relative group"
           onMouseDown={handleMouseDown}
         >
-          <div className="absolute inset-y-0 -left-2 -right-2 group-hover:bg-blue-500/10" />
+          <div className="absolute inset-y-0 -left-2 -right-2 group-hover:bg-deepGreen-500/10" />
         </div>
 
         {/* Code Panel */}
