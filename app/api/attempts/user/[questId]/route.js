@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connect } from '@/lib/mongodb/mongoose';
 import Attempt from '@/lib/models/attemptModel';
-import { auth } from '@clerk/nextjs';
+import { auth } from '@clerk/nextjs/server';
 
 export async function GET(request, { params }) {
   try {

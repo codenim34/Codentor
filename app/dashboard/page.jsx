@@ -148,57 +148,57 @@ export default function Dashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-black via-codeBlack-900 to-deepGreen-950 py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Header Skeleton */}
           <div className="mb-8 space-y-4">
-            <div className="h-12 w-3/4 bg-gray-200 rounded-lg animate-pulse"></div>
-            <div className="h-6 w-1/2 bg-gray-200 rounded-lg animate-pulse"></div>
+            <div className="h-12 w-3/4 bg-deepGreen-900/30 rounded-lg animate-pulse"></div>
+            <div className="h-6 w-1/2 bg-deepGreen-900/30 rounded-lg animate-pulse"></div>
           </div>
 
           {/* Stats Cards Skeleton */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {[1, 2, 3, 4].map((item) => (
-              <div key={item} className="bg-white p-6 rounded-xl shadow-sm">
+              <div key={item} className="bg-codeBlack-900/50 border border-deepGreen-800/30 p-6 rounded-xl">
                 <div className="flex justify-between items-center">
                   <div className="space-y-3">
-                    <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
-                    <div className="h-8 w-16 bg-gray-300 rounded animate-pulse"></div>
-                    <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+                    <div className="h-4 w-20 bg-deepGreen-900/30 rounded animate-pulse"></div>
+                    <div className="h-8 w-16 bg-deepGreen-900/40 rounded animate-pulse"></div>
+                    <div className="h-4 w-24 bg-deepGreen-900/30 rounded animate-pulse"></div>
                   </div>
-                  <div className="h-16 w-16 rounded-full bg-gray-200 animate-pulse"></div>
+                  <div className="h-16 w-16 rounded-full bg-deepGreen-900/30 animate-pulse"></div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Recent Activity and Roadmaps Skeleton */}
+          {/* Recent Activity and Learning Paths Skeleton */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Recent Activity Skeleton */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="h-6 w-40 bg-gray-200 rounded mb-6 animate-pulse"></div>
+            <div className="bg-codeBlack-900/50 border border-deepGreen-800/30 rounded-xl p-6">
+              <div className="h-6 w-40 bg-deepGreen-900/30 rounded mb-6 animate-pulse"></div>
               {[1, 2, 3].map((item) => (
                 <div key={item} className="flex items-center space-x-4 mb-4">
-                  <div className="h-10 w-10 rounded-full bg-gray-200 animate-pulse"></div>
+                  <div className="h-10 w-10 rounded-full bg-deepGreen-900/30 animate-pulse"></div>
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse"></div>
-                    <div className="h-3 w-1/2 bg-gray-200 rounded animate-pulse"></div>
+                    <div className="h-4 w-3/4 bg-deepGreen-900/30 rounded animate-pulse"></div>
+                    <div className="h-3 w-1/2 bg-deepGreen-900/30 rounded animate-pulse"></div>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Active Roadmaps Skeleton */}
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <div className="h-6 w-40 bg-gray-200 rounded mb-6 animate-pulse"></div>
+            {/* Active Learning Paths Skeleton */}
+            <div className="bg-codeBlack-900/50 border border-deepGreen-800/30 rounded-xl p-6">
+              <div className="h-6 w-40 bg-deepGreen-900/30 rounded mb-6 animate-pulse"></div>
               {[1, 2].map((item) => (
                 <div key={item} className="mb-4">
                   <div className="flex items-center justify-between mb-2">
-                    <div className="h-4 w-1/3 bg-gray-200 rounded animate-pulse"></div>
-                    <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+                    <div className="h-4 w-1/3 bg-deepGreen-900/30 rounded animate-pulse"></div>
+                    <div className="h-4 w-16 bg-deepGreen-900/30 rounded animate-pulse"></div>
                   </div>
-                  <div className="h-2 w-full bg-gray-100 rounded-full">
-                    <div className="h-2 w-1/3 bg-gray-200 rounded-full animate-pulse"></div>
+                  <div className="h-2 w-full bg-codeBlack-800 rounded-full">
+                    <div className="h-2 w-1/3 bg-deepGreen-900/40 rounded-full animate-pulse"></div>
                   </div>
                 </div>
               ))}
@@ -210,76 +210,76 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-black via-codeBlack-900 to-deepGreen-950 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="mb-8 space-y-4">
-          <h1 className="text-4xl font-bold text-gray-900">
-            Welcome back, <span className="text-primary">{user?.firstName}</span>!
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-deepGreen-400 to-deepGreen-600 bg-clip-text text-transparent">
+            Welcome back, <span className="text-deepGreen-500">{user?.firstName}</span>!
           </h1>
-          <p className="text-gray-600">Here's an overview of your learning journey</p>
+          <p className="text-gray-300">Here's an overview of your learning journey</p>
         </div>
 
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="p-6 bg-white hover:shadow-lg transition-all duration-300 border-l-4 border-primary">
+          <Card className="p-6 bg-codeBlack-900/50 border border-deepGreen-800/30 hover:border-deepGreen-600/50 hover:shadow-green-glow transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">Active Quests</p>
-                <h3 className="text-2xl font-bold text-gray-900 mt-1">{stats.activeQuests}</h3>
-                <p className="text-xs text-gray-400 mt-1">Ongoing challenges</p>
+                <p className="text-sm font-medium text-gray-400">Active Challenges</p>
+                <h3 className="text-2xl font-bold text-white mt-1">{stats.activeQuests}</h3>
+                <p className="text-xs text-gray-500 mt-1">Ongoing challenges</p>
               </div>
-              <div className="bg-primary/10 p-3 rounded-full">
-                <FaTrophy className="text-2xl text-primary" />
+              <div className="bg-deepGreen-500/20 p-3 rounded-full">
+                <FaTrophy className="text-2xl text-deepGreen-400" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-6 bg-white hover:shadow-lg transition-all duration-300 border-l-4 border-green-500">
+          <Card className="p-6 bg-codeBlack-900/50 border border-deepGreen-800/30 hover:border-deepGreen-600/50 hover:shadow-green-glow transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">Completed Quests</p>
-                <h3 className="text-2xl font-bold text-gray-900 mt-1">{stats.completedQuests}</h3>
-                <p className="text-xs text-gray-400 mt-1">Successfully finished</p>
+                <p className="text-sm font-medium text-gray-400">Completed Challenges</p>
+                <h3 className="text-2xl font-bold text-white mt-1">{stats.completedQuests}</h3>
+                <p className="text-xs text-gray-500 mt-1">Successfully finished</p>
               </div>
-              <div className="bg-green-500/10 p-3 rounded-full">
-                <FaBook className="text-2xl text-green-500" />
+              <div className="bg-deepGreen-500/20 p-3 rounded-full">
+                <FaBook className="text-2xl text-deepGreen-400" />
               </div>
             </div>
           </Card>
 
-          <Card className="p-6 bg-white hover:shadow-lg transition-all duration-300 border-l-4 border-cyan-500">
+          <Card className="p-6 bg-codeBlack-900/50 border border-deepGreen-800/30 hover:border-deepGreen-600/50 hover:shadow-green-glow transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">Roadmap Progress</p>
-                <h3 className="text-2xl font-bold text-gray-900 mt-1">{stats.roadmapProgress}%</h3>
-                <p className="text-xs text-gray-400 mt-1">Overall completion</p>
+                <p className="text-sm font-medium text-gray-400">Learning Path Progress</p>
+                <h3 className="text-2xl font-bold text-white mt-1">{stats.roadmapProgress}%</h3>
+                <p className="text-xs text-gray-500 mt-1">Overall completion</p>
               </div>
               <div style={{ width: 60, height: 60 }}>
                 <CircularProgressbar
                   value={stats.roadmapProgress}
                   text={`${stats.roadmapProgress}%`}
                   styles={{
-                    path: { stroke: '#0891b2', transition: 'stroke-dashoffset 0.5s ease' },
-                    text: { fill: '#0891b2', fontSize: '24px', fontWeight: 'bold' },
-                    trail: { stroke: '#e2e8f0' },
+                    path: { stroke: '#10b981', transition: 'stroke-dashoffset 0.5s ease' },
+                    text: { fill: '#10b981', fontSize: '24px', fontWeight: 'bold' },
+                    trail: { stroke: '#1a1a1a' },
                   }}
                 />
               </div>
             </div>
           </Card>
 
-          <Card className="p-6 bg-white hover:shadow-lg transition-all duration-300 border-l-4 border-purple-500">
+          <Card className="p-6 bg-codeBlack-900/50 border border-deepGreen-800/30 hover:border-deepGreen-600/50 hover:shadow-green-glow transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500">Learning Streak</p>
-                <h3 className="text-2xl font-bold text-gray-900 mt-1">
+                <p className="text-sm font-medium text-gray-400">Learning Streak</p>
+                <h3 className="text-2xl font-bold text-white mt-1">
                   {stats.learningStreak} {stats.learningStreak === 1 ? 'day' : 'days'}
                 </h3>
-                <p className="text-xs text-gray-400 mt-1">Keep it up!</p>
+                <p className="text-xs text-gray-500 mt-1">Keep it up!</p>
               </div>
-              <div className="bg-purple-500/10 p-3 rounded-full">
-                <IoTrendingUp className="text-2xl text-purple-500" />
+              <div className="bg-deepGreen-500/20 p-3 rounded-full">
+                <IoTrendingUp className="text-2xl text-deepGreen-400" />
               </div>
             </div>
           </Card>
@@ -288,22 +288,22 @@ export default function Dashboard() {
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Activity */}
-          <Card className="bg-white p-6 hover:shadow-lg transition-all duration-300">
+          <Card className="bg-codeBlack-900/50 border border-deepGreen-800/30 p-6 hover:border-deepGreen-600/50 hover:shadow-green-glow transition-all duration-300">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900">Recent Activity</h2>
-              <FaClock className="text-gray-400" />
+              <h2 className="text-xl font-semibold text-white">Recent Activity</h2>
+              <FaClock className="text-deepGreen-400" />
             </div>
             <div className="space-y-4">
               {recentActivity.map((activity, index) => (
                 <div
                   key={index}
-                  className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200 cursor-pointer border border-gray-100"
+                  className="flex items-center p-3 hover:bg-deepGreen-950/30 rounded-lg transition-colors duration-200 cursor-pointer border border-deepGreen-800/20"
                 >
                   <div className="flex-1">
-                    <h4 className="font-medium text-gray-900">{activity.title}</h4>
+                    <h4 className="font-medium text-gray-200">{activity.title}</h4>
                     <div className="flex items-center mt-1">
-                      <FaCalendarAlt className="text-gray-400 text-xs mr-1" />
-                      <p className="text-sm text-gray-500">
+                      <FaCalendarAlt className="text-deepGreen-500 text-xs mr-1" />
+                      <p className="text-sm text-gray-400">
                         {activity.type} • {activity.date ? new Date(activity.date).toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: 'short',
@@ -317,11 +317,11 @@ export default function Dashboard() {
             </div>
           </Card>
 
-          {/* Active Roadmaps */}
-          <Card className="bg-white p-6 hover:shadow-lg transition-all duration-300">
+          {/* Active Learning Paths */}
+          <Card className="bg-codeBlack-900/50 border border-deepGreen-800/30 p-6 hover:border-deepGreen-600/50 hover:shadow-green-glow transition-all duration-300">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900">Active Roadmaps</h2>
-              <FaRoad className="text-gray-400" />
+              <h2 className="text-xl font-semibold text-white">Active Learning Paths</h2>
+              <FaRoad className="text-deepGreen-400" />
             </div>
             <div className="space-y-4">
               {roadmaps.slice(0, 2).map((roadmap, index) => {
@@ -334,13 +334,13 @@ export default function Dashboard() {
                 return (
                   <div
                     key={roadmap._id}
-                    className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer"
+                    className="p-4 border border-deepGreen-800/30 rounded-lg hover:bg-deepGreen-950/30 hover:border-deepGreen-600/50 transition-all cursor-pointer"
                     onClick={() => router.push(`/roadmaps/${roadmap._id}`)}
                   >
                     <div className="flex justify-between items-center">
                       <div>
-                        <h3 className="font-medium text-gray-900">{roadmap.title}</h3>
-                        <p className="text-sm text-gray-500">{roadmap.description}</p>
+                        <h3 className="font-medium text-gray-200">{roadmap.title}</h3>
+                        <p className="text-sm text-gray-400">{roadmap.description}</p>
                       </div>
                       <div className="w-16 h-16">
                         <CircularProgressbar
@@ -348,10 +348,10 @@ export default function Dashboard() {
                           text={`${progress}%`}
                           styles={{
                             path: {
-                              stroke: `rgba(62, 152, 199, ${progress / 100})`,
+                              stroke: `rgba(16, 185, 129, ${progress / 100})`,
                             },
                             text: {
-                              fill: '#3e98c7',
+                              fill: '#10b981',
                               fontSize: '24px',
                             },
                           }}

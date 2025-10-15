@@ -1,6 +1,6 @@
 import Question from "@/lib/models/questionModel";
 import { connect } from "@/lib/mongodb/mongoose";
-import { auth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export async function POST(request, { params }) {
