@@ -170,15 +170,15 @@ export default function RoadmapDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gradient-to-br from-black via-codeBlack-900 to-deepGreen-950">
         {/* Sticky Header Loading State */}
-        <div className="sticky top-20 z-40 bg-white shadow-sm">
+        <div className="sticky top-20 z-40 bg-codeBlack-900/80 border-b border-deepGreen-800/30 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
-              <div className="h-8 w-24 bg-gray-200 rounded-lg animate-pulse"></div>
+              <div className="h-8 w-24 bg-deepGreen-900/30 rounded-lg animate-pulse"></div>
               <div className="flex items-center gap-4">
-                <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
-                <div className="w-32 h-2 bg-gray-200 rounded animate-pulse"></div>
+                <div className="h-4 w-24 bg-deepGreen-900/30 rounded animate-pulse"></div>
+                <div className="w-32 h-2 bg-deepGreen-900/30 rounded animate-pulse"></div>
               </div>
             </div>
           </div>
@@ -188,16 +188,16 @@ export default function RoadmapDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Navigation Loading State */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-2xl shadow-sm p-6 sticky top-44">
-                <div className="h-6 w-32 bg-gray-200 rounded animate-pulse mb-6"></div>
+              <div className="bg-codeBlack-900/50 rounded-2xl border border-deepGreen-800/30 p-6 sticky top-44">
+                <div className="h-6 w-32 bg-deepGreen-900/30 rounded animate-pulse mb-6"></div>
                 <div className="space-y-4">
                   {[1, 2, 3, 4, 5].map((index) => (
-                    <div key={index} className="bg-gray-100 rounded-lg p-4">
+                    <div key={index} className="bg-codeBlack-800/50 rounded-lg p-4 border border-deepGreen-800/30">
                       <div className="flex items-center justify-between mb-2">
-                        <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
-                        <div className="h-4 w-4 bg-gray-200 rounded-full animate-pulse"></div>
+                        <div className="h-4 w-16 bg-deepGreen-900/30 rounded animate-pulse"></div>
+                        <div className="h-4 w-4 bg-deepGreen-900/30 rounded-full animate-pulse"></div>
                       </div>
-                      <div className="h-3 w-3/4 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-3 w-3/4 bg-deepGreen-900/30 rounded animate-pulse"></div>
                     </div>
                   ))}
                 </div>
@@ -207,20 +207,20 @@ export default function RoadmapDetailPage() {
             {/* Main Content Loading State */}
             <div className="lg:col-span-2">
               {/* Header Card Loading */}
-              <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-8">
-                <div className="bg-gradient-to-r from-[#101826] to-[#1c2c47] p-8">
-                  <div className="h-8 w-2/3 bg-white/20 rounded animate-pulse mb-3"></div>
-                  <div className="h-4 w-1/2 bg-white/20 rounded animate-pulse"></div>
+              <div className="bg-codeBlack-900/50 rounded-2xl border border-deepGreen-800/30 overflow-hidden mb-8">
+                <div className="bg-gradient-to-r from-deepGreen-900 to-codeBlack-900 p-8">
+                  <div className="h-8 w-2/3 bg-deepGreen-900/30 rounded animate-pulse mb-3"></div>
+                  <div className="h-4 w-1/2 bg-deepGreen-900/30 rounded animate-pulse"></div>
                 </div>
                 <div className="p-6">
                   <div className="flex items-center gap-6">
                     <div className="flex items-center gap-2">
-                      <div className="h-4 w-4 bg-gray-200 rounded animate-pulse"></div>
-                      <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-4 w-4 bg-deepGreen-900/30 rounded animate-pulse"></div>
+                      <div className="h-4 w-20 bg-deepGreen-900/30 rounded animate-pulse"></div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="h-4 w-4 bg-gray-200 rounded animate-pulse"></div>
-                      <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-4 w-4 bg-deepGreen-900/30 rounded animate-pulse"></div>
+                      <div className="h-4 w-24 bg-deepGreen-900/30 rounded animate-pulse"></div>
                     </div>
                   </div>
                 </div>
@@ -229,19 +229,19 @@ export default function RoadmapDetailPage() {
               {/* Steps Loading */}
               <div className="space-y-8">
                 {[1, 2].map((index) => (
-                  <div key={index} className="bg-white rounded-2xl shadow-sm p-8">
+                  <div key={index} className="bg-codeBlack-900/50 rounded-2xl border border-deepGreen-800/30 p-8">
                     <div className="flex items-center justify-between mb-6">
-                      <div className="h-8 w-1/3 bg-gray-200 rounded animate-pulse"></div>
-                      <div className="h-8 w-8 bg-gray-200 rounded-full animate-pulse"></div>
+                      <div className="h-8 w-1/3 bg-deepGreen-900/30 rounded animate-pulse"></div>
+                      <div className="h-8 w-8 bg-deepGreen-900/30 rounded-full animate-pulse"></div>
                     </div>
                     <div className="space-y-4 mb-8">
-                      <div className="h-4 w-full bg-gray-200 rounded animate-pulse"></div>
-                      <div className="h-4 w-5/6 bg-gray-200 rounded animate-pulse"></div>
-                      <div className="h-4 w-4/6 bg-gray-200 rounded animate-pulse"></div>
+                      <div className="h-4 w-full bg-deepGreen-900/30 rounded animate-pulse"></div>
+                      <div className="h-4 w-5/6 bg-deepGreen-900/30 rounded animate-pulse"></div>
+                      <div className="h-4 w-4/6 bg-deepGreen-900/30 rounded animate-pulse"></div>
                     </div>
                     <div className="flex gap-4">
-                      <div className="h-12 w-40 bg-blue-50 rounded-xl animate-pulse"></div>
-                      <div className="h-12 w-40 bg-red-50 rounded-xl animate-pulse"></div>
+                      <div className="h-12 w-40 bg-deepGreen-900/30 rounded-xl animate-pulse"></div>
+                      <div className="h-12 w-40 bg-deepGreen-900/30 rounded-xl animate-pulse"></div>
                     </div>
                   </div>
                 ))}
@@ -255,16 +255,16 @@ export default function RoadmapDetailPage() {
 
   if (!roadmap) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center bg-white p-8 rounded-2xl shadow-lg max-w-md mx-4">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <FiBookOpen className="w-8 h-8 text-red-600" />
+      <div className="min-h-screen bg-gradient-to-br from-black via-codeBlack-900 to-deepGreen-950 flex items-center justify-center">
+        <div className="text-center bg-codeBlack-900/50 border border-deepGreen-800/30 p-8 rounded-2xl max-w-md mx-4">
+          <div className="w-16 h-16 bg-deepGreen-900/40 rounded-full flex items-center justify-center mx-auto mb-4">
+            <FiBookOpen className="w-8 h-8 text-deepGreen-400" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Roadmap Not Found</h1>
-          <p className="text-gray-600 mb-6">The roadmap you're looking for doesn't exist or has been removed.</p>
+          <h1 className="text-2xl font-bold text-white mb-2">Roadmap Not Found</h1>
+          <p className="text-gray-300 mb-6">The roadmap you're looking for doesn't exist or has been removed.</p>
           <button
             onClick={() => router.push('/roadmaps')}
-            className="inline-flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 rounded-lg bg-deepGreen-600 text-white hover:bg-deepGreen-700 transition-colors"
           >
             <FiArrowLeft className="mr-2" />
             Back to Roadmaps
@@ -275,7 +275,7 @@ export default function RoadmapDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-black via-codeBlack-900 to-deepGreen-950">
       {showConfetti && (
         <Confetti
           width={windowSize.width}
@@ -285,18 +285,18 @@ export default function RoadmapDetailPage() {
         />
       )}
       {/* Sticky Header */}
-      <div className="sticky top-20 z-40 bg-white shadow-sm">
+      <div className="sticky top-20 z-40 bg-codeBlack-900/80 border-b border-deepGreen-800/30 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <button
               onClick={() => router.push('/roadmaps')}
-              className="inline-flex items-center text-gray-600 hover:text-gray-900"
+              className="inline-flex items-center text-gray-300 hover:text-white"
             >
               <FiArrowLeft className="mr-2" />
               Back to Roadmaps
             </button>
             <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-600">
+              <div className="text-sm text-gray-300">
                 Progress: {progressPercentage}%
               </div>
               <div className="w-32">
@@ -312,8 +312,8 @@ export default function RoadmapDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Steps Navigation */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-sm p-6 sticky top-44">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Steps Overview</h2>
+            <div className="bg-codeBlack-900/50 rounded-2xl border border-deepGreen-800/30 p-6 sticky top-44">
+              <h2 className="text-lg font-semibold text-white mb-4">Steps Overview</h2>
               <div className="steps-container overflow-hidden" style={{ height: '400px', position: 'relative' }}>
                 <div className="space-y-2">
                   {roadmap.content.steps.map((step, index) => (
@@ -323,21 +323,21 @@ export default function RoadmapDetailPage() {
                       onClick={() => setActiveStep(index)}
                       className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
                         activeStep === index
-                          ? 'bg-blue-50 text-blue-700'
-                          : 'hover:bg-gray-50'
+                          ? 'bg-deepGreen-900/40 text-deepGreen-300 border border-deepGreen-800/30'
+                          : 'hover:bg-codeBlack-800/50 border border-deepGreen-800/20'
                       }`}
                     >
                       <div className="flex items-center justify-between">
                         <span className={`text-sm font-medium ${
-                          completedSteps.has(index) ? 'text-green-600' : ''
+                          completedSteps.has(index) ? 'text-deepGreen-400' : 'text-gray-300'
                         }`}>
                           Step {step.step}
                         </span>
                         {completedSteps.has(index) && (
-                          <FaCheckCircle className="text-green-600" />
+                          <FaCheckCircle className="text-deepGreen-400" />
                         )}
                       </div>
-                      <p className="text-xs text-gray-600 mt-1 line-clamp-1">
+                      <p className="text-xs text-gray-400 mt-1 line-clamp-1">
                         {step.topic}
                       </p>
                     </button>
@@ -350,19 +350,19 @@ export default function RoadmapDetailPage() {
           {/* Main Content Area */}
           <div className="lg:col-span-2">
             {/* Roadmap Header */}
-            <div className="bg-white rounded-2xl shadow-sm overflow-hidden mb-8">
-              <div className="bg-gradient-to-r from-[#101826] to-[#1c2c47] p-8">
+            <div className="bg-codeBlack-900/50 rounded-2xl border border-deepGreen-800/30 overflow-hidden mb-8">
+              <div className="bg-gradient-to-r from-deepGreen-900 to-codeBlack-900 p-8">
                 <h1 className="text-3xl font-bold text-white mb-3">{roadmap.title}</h1>
-                <p className="text-blue-100">{roadmap.prompt}</p>
+                <p className="text-deepGreen-200">{roadmap.prompt}</p>
               </div>
-              <div className="p-6 bg-gradient-to-b from-gray-50/50">
+              <div className="p-6 bg-gradient-to-b from-codeBlack-900/30">
                 <div className="flex items-center gap-6">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <FiClock />
+                  <div className="flex items-center gap-2 text-gray-300">
+                    <FiClock className="text-deepGreen-400" />
                     <span>{roadmap.content.steps.length} Steps</span>
                   </div>
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <FaCheckCircle />
+                  <div className="flex items-center gap-2 text-gray-300">
+                    <FaCheckCircle className="text-deepGreen-400" />
                     <span>{completedSteps.size} Completed</span>
                   </div>
                 </div>
@@ -376,14 +376,14 @@ export default function RoadmapDetailPage() {
                   key={step.step}
                   id={`step-${index}`}
                   onClick={() => setActiveStep(index)}
-                  className={`bg-white rounded-2xl shadow-sm overflow-hidden transition-all duration-300 ${
-                    activeStep === index ? 'ring-2 ring-blue-500 ring-opacity-50' : 'cursor-pointer'
+                  className={`bg-codeBlack-900/50 rounded-2xl border border-deepGreen-800/30 overflow-hidden transition-all duration-300 ${
+                    activeStep === index ? 'ring-2 ring-deepGreen-500 ring-opacity-50' : 'cursor-pointer'
                   }`}
                   style={{ opacity: activeStep === index ? 1 : 0.5 }}
                 >
                   <div className="p-8">
                     <div className="flex items-center justify-between mb-6">
-                      <h2 className="text-2xl font-bold text-gray-900">
+                      <h2 className="text-2xl font-bold text-white">
                         Step {step.step}: {step.topic}
                       </h2>
                       <button
@@ -395,15 +395,15 @@ export default function RoadmapDetailPage() {
                         }}
                         className={`p-2 rounded-full transition-colors ${
                           completedSteps.has(index)
-                            ? 'bg-green-100 text-green-600'
-                            : 'bg-gray-100 text-gray-400'
-                        } ${activeStep === index ? 'hover:bg-green-200' : 'pointer-events-none'}`}
+                            ? 'bg-deepGreen-900/40 text-deepGreen-300'
+                            : 'bg-codeBlack-800 text-gray-400'
+                        } ${activeStep === index ? 'hover:bg-deepGreen-800/60' : 'pointer-events-none'}`}
                       >
                         <FaCheckCircle className="w-5 h-5" />
                       </button>
                     </div>
 
-                    <p className="text-gray-600 mb-6 leading-relaxed">
+                    <p className="text-gray-300 mb-6 leading-relaxed">
                       {step.description}
                     </p>
 
@@ -420,8 +420,8 @@ export default function RoadmapDetailPage() {
                               e.stopPropagation();
                             }
                           }}
-                          className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-50 text-blue-700 ${
-                            activeStep === index ? 'hover:bg-blue-100' : 'pointer-events-none'
+                          className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-deepGreen-900/40 text-deepGreen-300 ${
+                            activeStep === index ? 'hover:bg-deepGreen-800/60' : 'pointer-events-none'
                           } transition-colors`}
                         >
                           <FiExternalLink className="text-lg" />
@@ -439,14 +439,14 @@ export default function RoadmapDetailPage() {
                               e.stopPropagation();
                             }
                           }}
-                          className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-red-50 text-red-700 ${
-                            activeStep === index ? 'hover:bg-red-100' : 'pointer-events-none'
+                          className={`inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-codeBlack-800 text-red-300 ${
+                            activeStep === index ? 'hover:bg-codeBlack-700' : 'pointer-events-none'
                           } transition-colors`}
                         >
                           <FaYoutube className="text-lg" />
                           <span>Watch Tutorial</span>
                           {step.videoDuration && (
-                            <span className="text-sm text-red-600 bg-red-100 px-2 py-1 rounded-full ml-2">
+                            <span className="text-sm text-red-300 bg-codeBlack-700 px-2 py-1 rounded-full ml-2">
                               {formatDuration(step.videoDuration)}
                             </span>
                           )}

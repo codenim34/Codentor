@@ -160,14 +160,14 @@ const LearnPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="sticky top-20 z-40 bg-white shadow-sm">
+    <div className="min-h-screen bg-gradient-to-br from-black via-codeBlack-900 to-deepGreen-950">
+      <div className="sticky top-20 z-40 bg-codeBlack-900/80 border-b border-deepGreen-800/30 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between space-x-4">
             <div className="flex-1 max-w-2xl">
               <div className="relative">
                 <div className="relative flex items-center">
-                  <div className="absolute left-4 text-gray-500">
+                  <div className="absolute left-4 text-deepGreen-400">
                     <IoSearch size={20} />
                   </div>
                   <input
@@ -180,11 +180,11 @@ const LearnPage = () => {
                       }
                     }}
                     placeholder="Search for coding tutorials..."
-                    className="w-full pl-12 pr-4 py-3.5 bg-gray-50 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 text-gray-900 placeholder-gray-500 shadow-sm"
+                    className="w-full pl-12 pr-4 py-3.5 bg-codeBlack-900/50 border-2 border-deepGreen-800/30 rounded-xl focus:outline-none focus:border-deepGreen-500 focus:ring-2 focus:ring-deepGreen-900/50 transition-all duration-200 text-white placeholder-gray-400 shadow-sm"
                   />
                   <button 
                     onClick={() => searchTerm.trim() && fetchVideosBySearch()} 
-                    className={`absolute right-3 top-1/2 -translate-y-1/2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors ${!searchTerm.trim() && 'opacity-50 cursor-not-allowed'}`}
+                    className={`absolute right-3 top-1/2 -translate-y-1/2 px-4 py-2 bg-deepGreen-600 text-white rounded-lg hover:bg-deepGreen-700 transition-colors ${!searchTerm.trim() && 'opacity-50 cursor-not-allowed'}`}
                   >
                     Search
                   </button>
@@ -193,11 +193,11 @@ const LearnPage = () => {
             </div>
             <button
               onClick={() => router.push('/roadmaps')}
-              className="group relative overflow-hidden inline-flex items-center gap-2 px-8 py-4 border-2 border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-600 hover:from-blue-700 hover:via-blue-600 hover:to-indigo-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              className="group relative overflow-hidden inline-flex items-center gap-2 px-8 py-4 border-2 border-transparent text-base font-medium rounded-xl text-white bg-gradient-to-r from-deepGreen-600 via-deepGreen-500 to-deepGreen-700 hover:from-deepGreen-700 hover:via-deepGreen-600 hover:to-deepGreen-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 animate-shimmer"></div>
               <div className="relative flex flex-col items-start">
-                <span className="text-sm font-semibold text-blue-100 mb-0.5">Getting Lost in Videos? 🤔</span>
+                <span className="text-sm font-semibold text-deepGreen-200 mb-0.5">Getting Lost in Videos? 🤔</span>
                 <span className="flex items-center gap-2 text-white font-bold">
                   Get Your AI Learning Path
                   <svg 
@@ -228,12 +228,12 @@ const LearnPage = () => {
               {[1, 2, 3, 4, 5, 6].map((item) => (
                 <div
                   key={item}
-                  className="bg-white rounded-xl shadow-sm overflow-hidden flex flex-col h-full"
+                  className="bg-codeBlack-900/50 border border-deepGreen-800/30 rounded-xl overflow-hidden flex flex-col h-full"
                 >
                   {/* Thumbnail Skeleton */}
                   <div className="relative" style={{ paddingBottom: '56.25%' }}>
-                    <div className="absolute inset-0 bg-gray-200 animate-pulse">
-                      <div className="absolute bottom-2 right-2 w-12 h-5 bg-gray-300 rounded animate-pulse"></div>
+                    <div className="absolute inset-0 bg-deepGreen-900/30 animate-pulse">
+                      <div className="absolute bottom-2 right-2 w-12 h-5 bg-deepGreen-900/40 rounded animate-pulse"></div>
                     </div>
                   </div>
                   
@@ -241,14 +241,14 @@ const LearnPage = () => {
                   <div className="flex flex-col flex-grow p-5">
                     {/* Title Skeleton */}
                     <div className="space-y-2 mb-2">
-                      <div className="h-5 bg-gray-200 rounded w-full animate-pulse"></div>
-                      <div className="h-5 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                      <div className="h-5 bg-deepGreen-900/30 rounded w-full animate-pulse"></div>
+                      <div className="h-5 bg-deepGreen-900/30 rounded w-3/4 animate-pulse"></div>
                     </div>
                     
                     {/* Footer Skeleton */}
-                    <div className="mt-auto pt-3 flex items-center justify-between border-t border-gray-100">
-                      <div className="w-24 h-4 bg-gray-200 rounded animate-pulse"></div>
-                      <div className="w-20 h-3 bg-gray-200 rounded animate-pulse"></div>
+                    <div className="mt-auto pt-3 flex items-center justify-between border-t border-deepGreen-800/30">
+                      <div className="w-24 h-4 bg-deepGreen-900/30 rounded animate-pulse"></div>
+                      <div className="w-20 h-3 bg-deepGreen-900/30 rounded animate-pulse"></div>
                     </div>
                   </div>
                 </div>
@@ -258,7 +258,7 @@ const LearnPage = () => {
             videos.map((video) => (
               <div
                 key={video.id.videoId}
-                className="group bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer overflow-hidden flex flex-col h-full"
+                className="group bg-codeBlack-900/50 border border-deepGreen-800/30 rounded-xl hover:border-deepGreen-600/50 hover:shadow-green-glow transition-all duration-200 cursor-pointer overflow-hidden flex flex-col h-full"
                 onClick={() => router.push(`/learn/${video.id.videoId}`)}
               >
                 <div className="relative" style={{ paddingBottom: '56.25%' }}>
@@ -275,12 +275,12 @@ const LearnPage = () => {
                   )}
                 </div>
                 <div className="flex flex-col flex-grow p-5">
-                  <h3 className="text-lg font-semibold line-clamp-2 mb-2 group-hover:text-blue-600 transition-colors">
+                  <h3 className="text-lg font-semibold text-white line-clamp-2 mb-2 group-hover:text-deepGreen-300 transition-colors">
                     {video.snippet.title}
                   </h3>
-                  <div className="mt-auto pt-3 flex items-center justify-between border-t border-gray-100">
-                    <p className="text-sm text-gray-600">{video.snippet.channelTitle}</p>
-                    <p className="text-xs text-gray-500">
+                  <div className="mt-auto pt-3 flex items-center justify-between border-t border-deepGreen-800/30">
+                    <p className="text-sm text-gray-300">{video.snippet.channelTitle}</p>
+                    <p className="text-xs text-gray-400">
                       {formatDistanceToNow(new Date(video.snippet.publishedAt), { addSuffix: true })}
                     </p>
                   </div>
