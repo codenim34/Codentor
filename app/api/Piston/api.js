@@ -7,10 +7,26 @@ const API = axios.create({
 
 export const executeCode = async (language, sourceCode) => {
   try {
-    console.log('Executing code:', { language, version: LANGUAGE_VERSIONS[language] });
+    // Map language names to Piston API language names
+    const languageMap = {
+      'cpp': 'c++',  // Piston uses 'c++' instead of 'cpp'
+      'csharp': 'csharp',
+      'javascript': 'javascript',
+      'python': 'python',
+      'java': 'java',
+      'php': 'php',
+    };
+
+    const pistonLanguage = languageMap[language] || language;
+    
+    console.log('Executing code:', { 
+      originalLanguage: language,
+      pistonLanguage, 
+      version: LANGUAGE_VERSIONS[language] 
+    });
     
     const response = await API.post("/execute", {
-      language: language,
+      language: pistonLanguage,
       version: LANGUAGE_VERSIONS[language],
       files: [
         {

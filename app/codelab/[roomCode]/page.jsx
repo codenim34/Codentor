@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Editor } from "@monaco-editor/react";
 import { executeCode } from "@/app/api/Piston/api";
 import { CODE_SNIPPETS } from "@/app/constants";
+import { pusherClient } from "@/lib/pusher-client";
 import { 
   Play, 
   Copy, 
@@ -45,24 +46,140 @@ export default function CodeLabSession() {
   const [showOutput, setShowOutput] = useState(false);
   const [executionTime, setExecutionTime] = useState(null);
   const [participants, setParticipants] = useState([]);
+  const [lastUpdateFromServer, setLastUpdateFromServer] = useState(null);
 
+  // Pusher real-time collaboration
   useEffect(() => {
-    if (isLoaded && user) {
-      // Add current user as participant
-      setParticipants([
-        {
-          id: user.id,
-          name: user.firstName || user.username,
-          image: user.imageUrl,
-          role: 'creator',
+    if (!roomCode || !user) return;
+
+    const userId = user.id;
+    const username = user.firstName || user.username || 'Anonymous';
+
+    console.log('Setting up Pusher for room:', roomCode);
+    const channel = pusherClient.subscribe(`room-${roomCode}`);
+    
+    // Join room
+    const joinRoom = async () => {
+      try {
+        const response = await fetch('/api/socket', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            roomId: roomCode,
+            userId,
+            username,
+            event: 'join-room',
+          }),
+        });
+        if (!response.ok) {
+          console.error('Failed to join room');
+        } else {
+          toast.success(`Joined room ${roomCode}`);
         }
-      ]);
-    }
-  }, [isLoaded, user]);
+      } catch (error) {
+        console.error('Error joining room:', error);
+      }
+    };
+    
+    joinRoom();
+
+    // Listen for collaborator updates
+    channel.bind('collaboratorsUpdate', (data) => {
+      console.log('Collaborators updated:', data);
+      if (Array.isArray(data)) {
+        setParticipants(data.map(collab => ({
+          id: collab.userId,
+          name: collab.username,
+          image: user.imageUrl, // In production, fetch from user data
+          role: 'collaborator',
+        })));
+      }
+    });
+
+    // Listen for code updates from other users
+    channel.bind('codeUpdate', (data) => {
+      console.log('Code update from:', data.username);
+      if (data && data.userId !== userId) {
+        setLastUpdateFromServer(data.data);
+        setCode(data.data);
+        toast(`${data.username} updated the code`, {
+          icon: '✏️',
+          duration: 2000,
+        });
+      }
+    });
+
+    // Listen for language changes
+    channel.bind('languageChange', (data) => {
+      if (data && data.userId !== userId) {
+        setLanguage(data.language);
+        setCode(CODE_SNIPPETS[data.language] || "");
+        toast(`${data.username} changed language to ${data.language}`, {
+          icon: '🔄',
+          duration: 2000,
+        });
+      }
+    });
+
+    // Debug Pusher connection
+    pusherClient.connection.bind('connected', () => {
+      console.log('Pusher connected successfully');
+    });
+
+    pusherClient.connection.bind('error', (err) => {
+      console.error('Pusher error:', err);
+    });
+
+    return () => {
+      // Leave room on cleanup
+      fetch('/api/socket', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          roomId: roomCode,
+          userId,
+          username,
+          event: 'leave-room',
+        }),
+      }).catch(err => console.error('Error leaving room:', err));
+
+      channel.unbind_all();
+      pusherClient.unsubscribe(`room-${roomCode}`);
+    };
+  }, [roomCode, user]);
 
   const handleEditorDidMount = (editor, monaco) => {
     editorRef.current = editor;
     editor.focus();
+
+    // Debounced code update broadcast
+    let updateTimeout;
+    editor.onDidChangeModelContent(() => {
+      const newCode = editor.getValue();
+      
+      // Don't broadcast if this was from a server update
+      if (newCode === lastUpdateFromServer) {
+        return;
+      }
+
+      // Debounce to avoid too many updates
+      clearTimeout(updateTimeout);
+      updateTimeout = setTimeout(() => {
+        if (user && roomCode) {
+          fetch('/api/socket', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              roomId: roomCode,
+              userId: user.id,
+              username: user.firstName || user.username || 'Anonymous',
+              event: 'codeUpdate',
+              data: newCode,
+            }),
+          }).catch(err => console.error('Error broadcasting code:', err));
+        }
+      }, 500); // Wait 500ms before broadcasting
+    });
 
     // Add keyboard shortcut for running code
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter, () => {
@@ -75,6 +192,21 @@ export default function CodeLabSession() {
     setCode(CODE_SNIPPETS[newLanguage] || "");
     setOutput([]);
     setShowOutput(false);
+
+    // Broadcast language change to other collaborators
+    if (user && roomCode) {
+      fetch('/api/socket', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          roomId: roomCode,
+          userId: user.id,
+          username: user.firstName || user.username || 'Anonymous',
+          event: 'languageChange',
+          data: newLanguage,
+        }),
+      }).catch(err => console.error('Error broadcasting language change:', err));
+    }
   };
 
   const handleRunCode = async () => {
