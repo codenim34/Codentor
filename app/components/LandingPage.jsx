@@ -120,9 +120,9 @@ const LandingPage = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
-                <Link href={isSignedIn ? "/dashboard" : "/sign-in"}>
+                <Link href={isSignedIn ? "/codelab" : "/sign-in"}>
                   <button className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-emerald-600 hover:to-green-700 transition-all shadow-xl shadow-emerald-500/30 flex items-center justify-center">
-                    Start Coding Now <ChevronRight className="ml-2 h-5 w-5" />
+                    Try CodeLab Now <ChevronRight className="ml-2 h-5 w-5" />
                   </button>
                 </Link>
                 <Link href="#features">
@@ -166,6 +166,11 @@ const LandingPage = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <FeatureCard
+                icon={<GraduationCap />}
+                title="CodeLab"
+                description="Learn code with live mentors and AI assistance. Real-time collaboration, instant execution, and personalized guidance."
+              />
+              <FeatureCard
                 icon={<Youtube />}
                 title="Interactive Learning"
                 description="High-quality video tutorials paired with hands-on coding exercises. Learn by doing, not just watching."
@@ -184,11 +189,6 @@ const LandingPage = () => {
                 icon={<Users />}
                 title="Community Driven"
                 description="Connect with mentors and peers. Learn together in a collaborative environment."
-              />
-              <FeatureCard
-                icon={<Globe2 />}
-                title="Learn Anywhere"
-                description="Access world-class coding education anytime, anywhere. No barriers, just learning."
               />
               <FeatureCard
                 icon={<Trophy />}

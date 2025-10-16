@@ -17,6 +17,7 @@ import {
   TbLayoutSidebarLeftExpandFilled,
 } from "react-icons/tb";
 import { FiMap, FiHelpCircle } from "react-icons/fi";
+import { Code2 } from "lucide-react";
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
@@ -124,6 +125,25 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
 
           {/* Interactive Section */}
           <div className={`${isOpen ? "space-y-2 py-4 border-b border-gray-200" : "space-y-6"}`}>
+            <Link
+              href="/codelab"
+              className={`flex items-center text-gray-900 hover:text-indigo-600 hover:bg-white rounded-lg ${
+                !isOpen ? "p-1.5 justify-center" : "p-2"
+              } transition-all duration-300 relative group`}
+              title="CodeLab"
+            >
+              <Code2 className={`transition-all duration-300 min-w-[24px] min-h-[24px] ${isOpen ? "mr-2 text-xl" : "text-2xl"}`} />
+              {!isOpen && (
+                <div className="absolute left-full ml-4 scale-0 group-hover:scale-100 transition-all duration-300 origin-left">
+                  <div className="bg-white text-gray-900 px-4 py-2 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.15)] font-medium">
+                    CodeLab
+                  </div>
+                </div>
+              )}
+              <span className={`transition-all duration-300 ${isOpen ? "opacity-100" : "opacity-0 w-0"}`}>
+                {isOpen && "CodeLab"}
+              </span>
+            </Link>
             <Link
               href="/playground"
               className={`flex items-center text-gray-900 hover:text-indigo-600 hover:bg-white rounded-lg ${
