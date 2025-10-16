@@ -61,12 +61,12 @@ export default function CodeLabPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-codeBlack-800 via-green-950 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-emerald-950">
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute w-96 h-96 -top-48 -left-48 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
-        <div className="absolute w-96 h-96 -bottom-48 -right-48 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
-        <div className="absolute w-96 h-96 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
+        <div className="absolute w-96 h-96 -top-48 -left-48 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
+        <div className="absolute w-96 h-96 -bottom-48 -right-48 bg-green-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000" />
+        <div className="absolute w-96 h-96 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-emerald-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -76,12 +76,12 @@ export default function CodeLabPage() {
         {/* Main Action Cards */}
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
           {/* Create Session Card */}
-          <div className="group relative bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-lg rounded-2xl p-8 border border-purple-500/20 hover:border-purple-500/50 transition-all duration-300 hover:scale-105">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-pink-500/0 group-hover:from-purple-500/10 group-hover:to-pink-500/10 rounded-2xl transition-all duration-300" />
+          <div className="group relative bg-gradient-to-br from-emerald-500/10 to-green-500/10 backdrop-blur-lg rounded-2xl p-8 border border-emerald-500/20 hover:border-emerald-500/50 transition-all duration-300 hover:scale-105">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/0 to-green-500/0 group-hover:from-emerald-500/10 group-hover:to-green-500/10 rounded-2xl transition-all duration-300" />
             
             <div className="relative">
-              <div className="flex items-center justify-center w-16 h-16 bg-purple-500/20 rounded-xl mb-6 group-hover:bg-purple-500/30 transition-colors">
-                <Play className="w-8 h-8 text-purple-400" />
+              <div className="flex items-center justify-center w-16 h-16 bg-emerald-500/20 rounded-xl mb-6 group-hover:bg-emerald-500/30 transition-colors">
+                <Play className="w-8 h-8 text-emerald-400" />
               </div>
               
               <h2 className="text-2xl font-bold text-white mb-3">
@@ -94,7 +94,7 @@ export default function CodeLabPage() {
               <button
                 onClick={handleCreateSession}
                 disabled={isCreating}
-                className="w-full bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center group-hover:shadow-lg group-hover:shadow-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center group-hover:shadow-lg group-hover:shadow-emerald-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isCreating ? (
                   <>
@@ -112,12 +112,12 @@ export default function CodeLabPage() {
           </div>
 
           {/* Join Session Card */}
-          <div className="group relative bg-gradient-to-br from-blue-500/10 to-cyan-500/10 backdrop-blur-lg rounded-2xl p-8 border border-blue-500/20 hover:border-blue-500/50 transition-all duration-300 hover:scale-105">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-cyan-500/0 group-hover:from-blue-500/10 group-hover:to-cyan-500/10 rounded-2xl transition-all duration-300" />
+          <div className="group relative bg-gradient-to-br from-emerald-500/10 to-green-500/10 backdrop-blur-lg rounded-2xl p-8 border border-emerald-500/20 hover:border-emerald-500/50 transition-all duration-300 hover:scale-105">
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/0 to-green-500/0 group-hover:from-emerald-500/10 group-hover:to-green-500/10 rounded-2xl transition-all duration-300" />
             
             <div className="relative">
-              <div className="flex items-center justify-center w-16 h-16 bg-blue-500/20 rounded-xl mb-6 group-hover:bg-blue-500/30 transition-colors">
-                <Users className="w-8 h-8 text-blue-400" />
+              <div className="flex items-center justify-center w-16 h-16 bg-emerald-500/20 rounded-xl mb-6 group-hover:bg-emerald-500/30 transition-colors">
+                <Users className="w-8 h-8 text-emerald-400" />
               </div>
               
               <h2 className="text-2xl font-bold text-white mb-3">
@@ -134,12 +134,12 @@ export default function CodeLabPage() {
                   onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
                   placeholder="Enter 8-digit room code"
                   maxLength={8}
-                  className="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full bg-gray-900/50 border border-emerald-900/30 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all"
                 />
                 
                 <button
                   onClick={handleJoinSession}
-                  className="w-full bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center group-hover:shadow-lg group-hover:shadow-blue-500/50"
+                  className="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center group-hover:shadow-lg group-hover:shadow-emerald-500/50"
                 >
                   Join Session
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />

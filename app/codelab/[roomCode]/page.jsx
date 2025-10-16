@@ -382,7 +382,7 @@ export default function CodeLabSession() {
   // Redirect to sign-in if not authenticated
   if (!isLoaded) {
     return (
-      <div className="h-screen bg-slate-900 flex items-center justify-center">
+      <div className="h-screen bg-gradient-to-br from-black via-gray-900 to-emerald-950 flex items-center justify-center">
         <div className="text-white text-xl">Loading...</div>
       </div>
     );
@@ -391,27 +391,27 @@ export default function CodeLabSession() {
   if (!user) {
     router.push('/sign-in');
     return (
-      <div className="h-screen bg-slate-900 flex items-center justify-center">
+      <div className="h-screen bg-gradient-to-br from-black via-gray-900 to-emerald-950 flex items-center justify-center">
         <div className="text-white text-xl">Redirecting to sign in...</div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen flex flex-col bg-slate-900">
+    <div className="h-screen flex flex-col bg-gray-900">
       {/* Header */}
-      <header className="bg-slate-800 border-b border-slate-700 px-6 py-1">
+      <header className="bg-gray-800 border-b border-emerald-900/30 px-6 py-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h1 className="text-white font-semibold">CodeLab Session</h1>
                 <button
                   onClick={handleCopyRoomCode}
-                  className="text-sm text-gray-400 hover:text-purple-400 transition-colors flex items-center"
+                  className="text-sm text-gray-400 hover:text-emerald-400 transition-colors flex items-center"
                 >
                   Room: {roomCode}
                   <Copy className="w-3 h-3 ml-1" />
@@ -430,7 +430,7 @@ export default function CodeLabSession() {
             <select
               value={language}
               onChange={(e) => handleLanguageChange(e.target.value)}
-              className="bg-slate-700 text-white px-4 py-2 rounded-lg border border-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+              className="bg-gray-700 text-white px-4 py-2 rounded-lg border border-emerald-900/30 focus:outline-none focus:border-emerald-500 transition-colors"
             >
               {SUPPORTED_LANGUAGES.map((lang) => (
                 <option key={lang.id} value={lang.id}>
@@ -461,7 +461,7 @@ export default function CodeLabSession() {
 
               <button
                 onClick={handleCopyCode}
-                className="p-2 bg-slate-700 hover:bg-slate-600 text-gray-300 rounded-lg transition-colors"
+                className="p-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors"
                 title="Copy code"
               >
                 <Copy className="w-4 h-4" />
@@ -469,7 +469,7 @@ export default function CodeLabSession() {
 
               <button
                 onClick={handleDownload}
-                className="p-2 bg-slate-700 hover:bg-slate-600 text-gray-300 rounded-lg transition-colors"
+                className="p-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors"
                 title="Download code"
               >
                 <Download className="w-4 h-4" />
@@ -477,7 +477,7 @@ export default function CodeLabSession() {
 
               <button
                 onClick={handleReset}
-                className="p-2 bg-slate-700 hover:bg-slate-600 text-gray-300 rounded-lg transition-colors"
+                className="p-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg transition-colors"
                 title="Reset code"
               >
                 <RotateCcw className="w-4 h-4" />
@@ -522,18 +522,18 @@ export default function CodeLabSession() {
           />
 
           {/* Keyboard Shortcut Hint */}
-          <div className="absolute bottom-4 right-4 bg-slate-800/90 backdrop-blur-sm px-3 py-2 rounded-lg border border-slate-700">
+          <div className="absolute bottom-4 right-4 bg-gray-800/90 backdrop-blur-sm px-3 py-2 rounded-lg border border-emerald-900/30">
             <p className="text-xs text-gray-400">
-              Press <kbd className="px-1.5 py-0.5 bg-slate-700 rounded text-gray-300">Ctrl+Enter</kbd> to run
+              Press <kbd className="px-1.5 py-0.5 bg-gray-700 rounded text-gray-300">Ctrl+Enter</kbd> to run
             </p>
           </div>
         </div>
 
         {/* Output Panel */}
         {showOutput && (
-          <div className="w-96 bg-slate-800 border-l border-slate-700 flex flex-col">
+          <div className="w-96 bg-gray-800 border-l border-emerald-900/30 flex flex-col">
             {/* Output Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-emerald-900/30">
               <div className="flex items-center space-x-2">
                 <Terminal className="w-4 h-4 text-gray-400" />
                 <h3 className="text-white font-medium">Output</h3>
@@ -545,7 +545,7 @@ export default function CodeLabSession() {
               </div>
               <button
                 onClick={() => setShowOutput(false)}
-                className="p-1 hover:bg-slate-700 rounded transition-colors"
+                className="p-1 hover:bg-gray-700 rounded transition-colors"
               >
                 <X className="w-4 h-4 text-gray-400" />
               </button>
@@ -570,7 +570,7 @@ export default function CodeLabSession() {
             </div>
 
             {/* Output Footer */}
-            <div className="px-4 py-2 border-t border-slate-700 bg-slate-900/50">
+            <div className="px-4 py-2 border-t border-emerald-900/30 bg-gray-900/50">
               <div className="flex items-center space-x-2 text-xs">
                 {isError ? (
                   <>
@@ -579,13 +579,13 @@ export default function CodeLabSession() {
                   </>
                 ) : isRunning ? (
                   <>
-                    <Loader2 className="w-3 h-3 animate-spin text-blue-400" />
-                    <span className="text-blue-400">Running...</span>
+                    <Loader2 className="w-3 h-3 animate-spin text-emerald-400" />
+                    <span className="text-emerald-400">Running...</span>
                   </>
                 ) : (
                   <>
-                    <Check className="w-3 h-3 text-green-400" />
-                    <span className="text-green-400">Success</span>
+                    <Check className="w-3 h-3 text-emerald-400" />
+                    <span className="text-emerald-400">Success</span>
                   </>
                 )}
               </div>
