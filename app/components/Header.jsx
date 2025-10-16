@@ -14,8 +14,7 @@ const Header = () => {
   const navLinks = [
     { href: "/dashboard", label: "Home" },
     { href: "/learn", label: "Learn Hub" },
-    { href: "/roadmaps", label: "Roadmaps" },
-    { href: "/playground", label: "Code Lab" },
+    { href: "/codelab", label: "Code Lab" },
     { href: "/dev-discuss", label: "Community" },
     { href: "/quests", label: "Challenges" },
     { href: "/faq", label: "Support" },
