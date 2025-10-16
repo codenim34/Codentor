@@ -7,6 +7,7 @@ import { Editor } from "@monaco-editor/react";
 import { executeCode } from "@/app/api/Piston/api";
 import { CODE_SNIPPETS } from "@/app/constants";
 import { pusherClient } from "@/lib/pusher-client";
+import AIAssistant from "@/app/components/playground/AIAssistant";
 import { 
   Play, 
   Copy, 
@@ -397,8 +398,37 @@ export default function CodeLabSession() {
     );
   }
 
+  const handleAICodeUpdate = (newCode) => {
+    setCode(newCode);
+    if (editorRef.current) {
+      editorRef.current.setValue(newCode);
+    }
+    
+    // Broadcast the AI-generated code update to other collaborators
+    if (user && roomCode) {
+      fetch('/api/socket', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          roomId: roomCode,
+          userId: user.id,
+          username: 'AI Assistant',
+          event: 'codeUpdate',
+          data: newCode,
+        }),
+      }).catch(err => console.error('Error broadcasting AI code update:', err));
+    }
+  };
+
   return (
     <div className="h-screen flex flex-col bg-gray-900">
+      {/* AI Assistant */}
+      <AIAssistant 
+        code={code} 
+        language={language} 
+        onCodeUpdate={handleAICodeUpdate}
+      />
+
       {/* Header */}
       <header className="bg-gray-800 border-b border-emerald-900/30 px-6 py-1">
         <div className="flex items-center justify-between">
