@@ -199,7 +199,7 @@ The AI automatically receives:
 
 ```javascript
 const model = genAI.getGenerativeModel({ 
-  model: "gemini-1.5-flash",
+  model: "gemini-1.5-flash-latest",
   generationConfig: {
     temperature: 0.7,      // Creativity level (0-1)
     topP: 0.95,            // Nucleus sampling
@@ -209,13 +209,22 @@ const model = genAI.getGenerativeModel({
 });
 ```
 
+### Available Gemini Models
+
+Current models you can use (as of 2025):
+- **`gemini-1.5-flash-latest`** ⚡ (Currently used - Fast, efficient, great for coding)
+- **`gemini-1.5-pro-latest`** 🚀 (More powerful, slower, better for complex tasks)
+- **`gemini-2.0-flash-exp`** 🆕 (Experimental, cutting-edge features)
+
 ### Customization Options
 
 You can modify these settings in `app/api/ai-assistant/route.js`:
 
 - **Temperature**: Higher = more creative, lower = more focused
 - **Max Tokens**: Increase for longer responses
-- **Model**: Switch to `gemini-1.5-pro` for more advanced capabilities
+- **Model**: Switch between the models above based on your needs
+  - Flash models: Faster responses, lower cost
+  - Pro models: Better reasoning, more detailed answers
 
 ## Best Practices
 
