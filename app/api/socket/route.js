@@ -10,8 +10,9 @@ const pusher = new Pusher({
   useTLS: true,
 });
 
-// Store collaborators per room (in production, use Redis or database)
+// Store collaborators and room state per room (in production, use Redis or database)
 const roomCollaborators = new Map();
+const roomState = new Map(); // Store current code and language per room
 
 export async function POST(req) {
   try {
@@ -38,6 +39,11 @@ export async function POST(req) {
 
         // Broadcast updated collaborators list
         await pusher.trigger(channelName, 'collaboratorsUpdate', Array.from(room.values()));
+        
+        // Send current room state to the new user
+        if (roomState.has(roomId)) {
+          await pusher.trigger(channelName, 'roomState', roomState.get(roomId));
+        }
         break;
 
       case 'leave-room':
@@ -55,6 +61,13 @@ export async function POST(req) {
         break;
 
       case 'codeUpdate':
+        // Update room state
+        if (!roomState.has(roomId)) {
+          roomState.set(roomId, { code: data, language: 'javascript' });
+        } else {
+          roomState.get(roomId).code = data;
+        }
+        
         // Broadcast code update to all clients in the room
         await pusher.trigger(channelName, 'codeUpdate', {
           userId,
@@ -65,6 +78,13 @@ export async function POST(req) {
         break;
 
       case 'languageChange':
+        // Update room state
+        if (!roomState.has(roomId)) {
+          roomState.set(roomId, { code: '', language: data });
+        } else {
+          roomState.get(roomId).language = data;
+        }
+        
         // Broadcast language change to all clients
         await pusher.trigger(channelName, 'languageChange', {
           userId,

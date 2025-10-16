@@ -18,7 +18,8 @@ import {
   Terminal,
   X,
   Check,
-  Loader2
+  Loader2,
+  Share2
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -47,6 +48,7 @@ export default function CodeLabSession() {
   const [executionTime, setExecutionTime] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [lastUpdateFromServer, setLastUpdateFromServer] = useState(null);
+  const [hasInitialized, setHasInitialized] = useState(false);
 
   // Pusher real-time collaboration
   useEffect(() => {
@@ -87,12 +89,22 @@ export default function CodeLabSession() {
     channel.bind('collaboratorsUpdate', (data) => {
       console.log('Collaborators updated:', data);
       if (Array.isArray(data)) {
-        setParticipants(data.map(collab => ({
-          id: collab.userId,
-          name: collab.username,
-          image: user.imageUrl, // In production, fetch from user data
-          role: 'collaborator',
-        })));
+        setParticipants(data);
+      }
+    });
+
+    // Request current room state when joining
+    channel.bind('roomState', (data) => {
+      console.log('Received room state:', data);
+      if (data && !hasInitialized) {
+        if (data.code) {
+          setCode(data.code);
+          setLastUpdateFromServer(data.code);
+        }
+        if (data.language) {
+          setLanguage(data.language);
+        }
+        setHasInitialized(true);
       }
     });
 
@@ -254,11 +266,29 @@ export default function CodeLabSession() {
     }
   };
 
-  const handleCopyCode = () => {
+  const handleCopyCode = async () => {
     if (editorRef.current) {
       const code = editorRef.current.getValue();
-      navigator.clipboard.writeText(code);
-      toast.success("Code copied to clipboard!");
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(code);
+          toast.success("Code copied to clipboard!");
+        } else {
+          // Fallback
+          const textArea = document.createElement("textarea");
+          textArea.value = code;
+          textArea.style.position = "fixed";
+          textArea.style.left = "-999999px";
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+          toast.success("Code copied to clipboard!");
+        }
+      } catch (error) {
+        console.error('Failed to copy:', error);
+        toast.error("Failed to copy code");
+      }
     }
   };
 
@@ -296,11 +326,60 @@ export default function CodeLabSession() {
     }
   };
 
-  const handleCopyRoomCode = () => {
-    navigator.clipboard.writeText(roomCode);
-    toast.success("Room code copied! Share it with others to collaborate.");
+  const handleCopyRoomCode = async () => {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(roomCode);
+        toast.success("Room code copied! Share it with others to collaborate.");
+      } else {
+        // Fallback for older browsers
+        const textArea = document.createElement("textarea");
+        textArea.value = roomCode;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        toast.success("Room code copied! Share it with others to collaborate.");
+      }
+    } catch (error) {
+      console.error('Failed to copy:', error);
+      toast.error("Failed to copy room code");
+    }
   };
 
+  const handleShareLink = async () => {
+    try {
+      const shareUrl = `${window.location.origin}/codelab/${roomCode}`;
+      
+      // Try modern clipboard API first
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("Share link copied! Anyone with this link can join the session.");
+      } else {
+        // Fallback for older browsers or non-HTTPS
+        const textArea = document.createElement("textarea");
+        textArea.value = shareUrl;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+          document.execCommand('copy');
+          toast.success("Share link copied! Anyone with this link can join the session.");
+        } catch (err) {
+          toast.error("Failed to copy link. Please copy manually: " + shareUrl);
+        }
+        document.body.removeChild(textArea);
+      }
+    } catch (error) {
+      console.error('Failed to copy:', error);
+      toast.error("Failed to copy link. Please try again.");
+    }
+  };
+
+  // Redirect to sign-in if not authenticated
   if (!isLoaded) {
     return (
       <div className="h-screen bg-slate-900 flex items-center justify-center">
@@ -309,10 +388,19 @@ export default function CodeLabSession() {
     );
   }
 
+  if (!user) {
+    router.push('/sign-in');
+    return (
+      <div className="h-screen bg-slate-900 flex items-center justify-center">
+        <div className="text-white text-xl">Redirecting to sign in...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="h-screen flex flex-col bg-slate-900">
       {/* Header */}
-      <header className="bg-slate-800 border-b border-slate-700 px-6 py-4">
+      <header className="bg-slate-800 border-b border-slate-700 px-6 py-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
@@ -333,22 +421,10 @@ export default function CodeLabSession() {
           </div>
 
           <div className="flex items-center space-x-4">
-            {/* Participants */}
-            <div className="flex items-center space-x-2 bg-slate-700/50 px-3 py-2 rounded-lg">
-              <Users className="w-4 h-4 text-gray-400" />
-              <span className="text-sm text-gray-300">{participants.length} online</span>
-              <div className="flex -space-x-2">
-                {participants.map((participant) => (
-                  <img
-                    key={participant.id}
-                    src={participant.image}
-                    alt={participant.name}
-                    className="w-6 h-6 rounded-full border-2 border-slate-800"
-                    title={participant.name}
-                  />
-                ))}
-              </div>
-            </div>
+           
+
+            
+        
 
             {/* Language Selector */}
             <select

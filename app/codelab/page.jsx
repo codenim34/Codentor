@@ -12,13 +12,23 @@ export default function CodeLabPage() {
   const [roomCode, setRoomCode] = useState("");
   const [isCreating, setIsCreating] = useState(false);
 
+  // Redirect to sign-in if not authenticated
+  if (isLoaded && !user) {
+    router.push('/sign-in');
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+        <div className="text-white text-xl">Redirecting to sign in...</div>
+      </div>
+    );
+  }
+
   const generateRoomCode = () => {
     return nanoid(8).toUpperCase();
   };
 
   const handleCreateSession = async () => {
     if (!isLoaded || !user) {
-      alert("Please sign in to create a session");
+      router.push('/sign-in');
       return;
     }
 
@@ -32,6 +42,11 @@ export default function CodeLabPage() {
   };
 
   const handleJoinSession = () => {
+    if (!isLoaded || !user) {
+      router.push('/sign-in');
+      return;
+    }
+
     if (!roomCode.trim()) {
       alert("Please enter a room code");
       return;
@@ -46,7 +61,7 @@ export default function CodeLabPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-codeBlack-800 via-green-950 to-slate-900">
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute w-96 h-96 -top-48 -left-48 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />
@@ -56,20 +71,7 @@ export default function CodeLabPage() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center justify-center p-2 bg-purple-500/10 rounded-full mb-6">
-            <Code2 className="w-8 h-8 text-purple-400" />
-          </div>
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            Welcome to{" "}
-            <span className="bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
-              CodeLab
-            </span>
-          </h1>
-          <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Learn to code with mentors and AI. Write, execute, and master programming in a collaborative environment.
-          </p>
-        </div>
+       
 
         {/* Main Action Cards */}
         <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
@@ -147,50 +149,7 @@ export default function CodeLabPage() {
           </div>
         </div>
 
-        {/* Features */}
-        <div className="max-w-5xl mx-auto">
-          <h3 className="text-2xl font-bold text-white text-center mb-8">
-            What makes CodeLab special?
-          </h3>
-          
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-slate-800/30 backdrop-blur-lg rounded-xl p-6 border border-slate-700/50">
-              <div className="flex items-center justify-center w-12 h-12 bg-emerald-500/20 rounded-lg mb-4">
-                <Zap className="w-6 h-6 text-emerald-400" />
-              </div>
-              <h4 className="text-lg font-semibold text-white mb-2">
-                Real-time Execution
-              </h4>
-              <p className="text-gray-400 text-sm">
-                Write and run code instantly with support for multiple programming languages.
-              </p>
-            </div>
-
-            <div className="bg-slate-800/30 backdrop-blur-lg rounded-xl p-6 border border-slate-700/50">
-              <div className="flex items-center justify-center w-12 h-12 bg-purple-500/20 rounded-lg mb-4">
-                <Users className="w-6 h-6 text-purple-400" />
-              </div>
-              <h4 className="text-lg font-semibold text-white mb-2">
-                Collaborative Learning
-              </h4>
-              <p className="text-gray-400 text-sm">
-                Learn together with real-time code synchronization across all participants.
-              </p>
-            </div>
-
-            <div className="bg-slate-800/30 backdrop-blur-lg rounded-xl p-6 border border-slate-700/50">
-              <div className="flex items-center justify-center w-12 h-12 bg-pink-500/20 rounded-lg mb-4">
-                <Sparkles className="w-6 h-6 text-pink-400" />
-              </div>
-              <h4 className="text-lg font-semibold text-white mb-2">
-                AI Assistant
-              </h4>
-              <p className="text-gray-400 text-sm">
-                Get instant help, code reviews, and explanations powered by advanced AI.
-              </p>
-            </div>
-          </div>
-        </div>
+        
       </div>
 
       <style jsx>{`
