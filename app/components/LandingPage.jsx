@@ -11,6 +11,8 @@ import {
   Trophy,
   Users,
   Youtube,
+  StickyNote,
+  Mic,
 } from "lucide-react";
 import Link from "next/link";
 import React, { useState } from "react";
@@ -212,6 +214,18 @@ const LandingPage = () => {
                 title="Learning Analytics"
                 description="Track your progress with detailed analytics and AI-powered insights. Get personalized recommendations to optimize your learning journey."
                 gradient="bg-gradient-to-br from-lime-500 via-green-500 to-emerald-600"
+              />
+              <FeatureCard
+                icon={<StickyNote className="w-8 h-8" />}
+                title="Smart Notes"
+                description="Organize your learning with intelligent note-taking. Capture insights, code snippets, and key concepts with AI-powered organization and search."
+                gradient="bg-gradient-to-br from-emerald-600 via-green-500 to-teal-500"
+              />
+              <FeatureCard
+                icon={<Mic className="w-8 h-8" />}
+                title="Voice Agent"
+                description="Interact with AI through natural voice commands. Practice coding interviews, get explanations, and learn hands-free with our voice-enabled assistant."
+                gradient="bg-gradient-to-br from-green-500 via-emerald-600 to-cyan-500"
               />
             </div>
           </div>
