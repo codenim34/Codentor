@@ -10,8 +10,6 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import { FiClock, FiEdit2 } from "react-icons/fi";
 
-const DnDCalendar = withDragAndDrop(Calendar);
-
 const locales = {
   'en-US': enUS,
 };
@@ -23,6 +21,8 @@ const localizer = dateFnsLocalizer({
   getDay,
   locales,
 });
+
+const DnDCalendar = withDragAndDrop(Calendar);
 
 export default function CalendarView({ tasks, onTaskUpdated, onEditTask }) {
   const [view, setView] = useState('month'); // 'month', 'week', 'day'
@@ -46,6 +46,11 @@ export default function CalendarView({ tasks, onTaskUpdated, onEditTask }) {
 
   // Handle event drag and drop (reschedule)
   const handleEventDrop = async ({ event, start, end }) => {
+    if (event.resource.status === 'completed') {
+      toast.error("Cannot reschedule completed tasks");
+      return;
+    }
+
     try {
       const response = await fetch('/api/tasks', {
         method: 'PATCH',
@@ -68,6 +73,12 @@ export default function CalendarView({ tasks, onTaskUpdated, onEditTask }) {
       console.error("Error rescheduling task:", error);
       toast.error("Failed to reschedule task");
     }
+  };
+
+  // Handle event resize (not used but required by DnD)
+  const handleEventResize = async ({ event, start, end }) => {
+    // We don't allow resizing, just moving
+    return;
   };
 
   // Custom event style getter
@@ -214,7 +225,7 @@ export default function CalendarView({ tasks, onTaskUpdated, onEditTask }) {
         }
       `}</style>
 
-      <Calendar
+      <DnDCalendar
         localizer={localizer}
         events={events}
         startAccessor="start"
@@ -225,6 +236,7 @@ export default function CalendarView({ tasks, onTaskUpdated, onEditTask }) {
         views={['month', 'week', 'day']}
         onSelectEvent={handleSelectEvent}
         onEventDrop={handleEventDrop}
+        onEventResize={handleEventResize}
         eventPropGetter={eventStyleGetter}
         components={{
           event: EventComponent,

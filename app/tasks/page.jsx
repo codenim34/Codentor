@@ -8,7 +8,7 @@ import { FiPlus, FiList, FiCalendar, FiGrid, FiFilter } from "react-icons/fi";
 import TaskForm from "../components/tasks/TaskForm";
 import TaskList from "../components/tasks/TaskList";
 import CalendarView from "../components/tasks/CalendarView";
-import KanbanBoard from "../components/tasks/KanbanBoard";
+import KanbanBoardWrapper from "../components/tasks/KanbanBoardWrapper";
 import GoogleCalendarSync from "../components/tasks/GoogleCalendarSync";
 import NotificationSettings from "../components/tasks/NotificationSettings";
 
@@ -278,7 +278,7 @@ export default function TasksPage() {
             )}
 
             {currentView === 'kanban' && (
-              <KanbanBoard
+              <KanbanBoardWrapper
                 tasks={tasks}
                 onTaskUpdated={handleTaskUpdated}
                 onEditTask={handleEditTask}
