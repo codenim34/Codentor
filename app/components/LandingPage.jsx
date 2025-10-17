@@ -120,9 +120,9 @@ const LandingPage = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row justify-center gap-4 mb-16">
-                <Link href={isSignedIn ? "/codelab" : "/sign-in"}>
+                <Link href={isSignedIn ? "/dashboard" : "/sign-in"}>
                   <button className="bg-gradient-to-r from-emerald-500 to-green-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-emerald-600 hover:to-green-700 transition-all shadow-xl shadow-emerald-500/30 flex items-center justify-center">
-                    Try CodeLab Now <ChevronRight className="ml-2 h-5 w-5" />
+                    Try Codentor Now <ChevronRight className="ml-2 h-5 w-5" />
                   </button>
                 </Link>
                 <Link href="#features">
