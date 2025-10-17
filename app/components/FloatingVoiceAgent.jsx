@@ -247,12 +247,12 @@ export default function FloatingVoiceAgent() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 group"
+          className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-emerald-600 to-green-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 group"
         >
           <Mic className="h-6 w-6 group-hover:animate-pulse" />
           <span className="absolute -top-1 -right-1 flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-pink-500"></span>
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
           </span>
         </button>
       )}
@@ -269,9 +269,9 @@ export default function FloatingVoiceAgent() {
           onMouseDown={handleMouseDown}
           className={`transition-all duration-300 ${isMinimized ? 'w-80' : 'w-96'}`}
         >
-          <Card className="shadow-2xl border-2 border-purple-500/20 bg-gradient-to-br from-white to-purple-50 dark:from-gray-900 dark:to-purple-950">
+          <Card className="shadow-2xl border-2 border-emerald-500/20 bg-gradient-to-br from-black via-gray-900 to-emerald-950">
             {/* Header */}
-            <div className="drag-handle cursor-move bg-gradient-to-r from-purple-600 to-pink-600 text-white p-4 rounded-t-lg flex items-center justify-between">
+            <div className="drag-handle cursor-move bg-gradient-to-r from-emerald-600 to-green-600 text-white p-4 rounded-t-lg flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="relative">
                   <Bot className="h-6 w-6" />
@@ -321,8 +321,8 @@ export default function FloatingVoiceAgent() {
                 {/* Messages */}
                 <div className="h-64 overflow-y-auto mb-4 space-y-3 scrollbar-thin scrollbar-thumb-purple-300 scrollbar-track-gray-100">
                   {messages.length === 0 && (
-                    <div className="text-center text-gray-500 dark:text-gray-400 py-8">
-                      <Bot className="h-12 w-12 mx-auto mb-3 text-purple-400" />
+                    <div className="text-center text-gray-400 py-8">
+                      <Bot className="h-12 w-12 mx-auto mb-3 text-emerald-400" />
                       <p className="text-sm font-medium mb-2">Hi! I'm your voice assistant</p>
                       <p className="text-xs">Try saying:</p>
                       <div className="mt-2 space-y-1 text-xs">
@@ -341,10 +341,10 @@ export default function FloatingVoiceAgent() {
                       <div
                         className={`max-w-[80%] rounded-lg p-3 ${
                           message.role === 'user'
-                            ? 'bg-purple-600 text-white'
+                            ? 'bg-emerald-600 text-white'
                             : message.type === 'error'
                             ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
-                            : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
+                            : 'bg-gray-800 text-gray-200'
                         }`}
                       >
                         <div className="flex items-start gap-2">
@@ -369,8 +369,8 @@ export default function FloatingVoiceAgent() {
                   
                   {isProcessing && (
                     <div className="flex justify-start">
-                      <div className="bg-gray-100 dark:bg-gray-800 rounded-lg p-3">
-                        <Loader2 className="h-5 w-5 animate-spin text-purple-600" />
+                      <div className="bg-gray-800 rounded-lg p-3">
+                        <Loader2 className="h-5 w-5 animate-spin text-emerald-600" />
                       </div>
                     </div>
                   )}
@@ -380,8 +380,8 @@ export default function FloatingVoiceAgent() {
 
                 {/* Transcript Display */}
                 {transcript && (
-                  <div className="mb-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
-                    <p className="text-sm text-purple-900 dark:text-purple-200">
+                  <div className="mb-3 p-3 bg-emerald-950/50 rounded-lg border border-emerald-800">
+                    <p className="text-sm text-emerald-200">
                       <span className="font-medium">You said:</span> {transcript}
                     </p>
                   </div>
@@ -395,7 +395,7 @@ export default function FloatingVoiceAgent() {
                     className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-300 flex items-center justify-center gap-2 ${
                       isListening
                         ? 'bg-red-600 hover:bg-red-700 text-white animate-pulse'
-                        : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white'
+                        : 'bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white'
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     {isListening ? (
@@ -413,9 +413,9 @@ export default function FloatingVoiceAgent() {
                 </div>
 
                 {/* Help Text */}
-                <div className="mt-3 text-xs text-gray-500 dark:text-gray-400 text-center">
+                <div className="mt-3 text-xs text-gray-400 text-center">
                   {isListening ? (
-                    <p className="text-red-600 dark:text-red-400 font-medium">🎤 Listening... Speak now!</p>
+                    <p className="text-red-400 font-medium">🎤 Listening... Speak now!</p>
                   ) : (
                     <p>Click the microphone to start voice commands</p>
                   )}

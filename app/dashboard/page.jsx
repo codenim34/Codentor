@@ -26,7 +26,7 @@ import {
 } from "react-icons/fa";
 import { IoTrendingUp, IoSparkles } from "react-icons/io5";
 import { MessageSquare, Target, Award, TrendingUp, AlertCircle, CheckCircle2, Zap } from "lucide-react";
-import FloatingAICoach from "@/app/components/FloatingAICoach";
+import AICoachSection from "@/app/components/AICoachSection";
 
 export default function Dashboard() {
   const { user } = useUser();
@@ -414,6 +414,16 @@ export default function Dashboard() {
           </Card>
         </div>
 
+        {/* AI Coach Section */}
+        <div className="mb-8">
+          <AICoachSection 
+            user={user}
+            interviewStats={interviewStats}
+            aiSuggestions={aiSuggestions}
+            loadingAI={loadingAI}
+          />
+        </div>
+
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Recent Activity */}
@@ -498,8 +508,6 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Floating AI Coach */}
-      <FloatingAICoach />
     </div>
   );
 }
