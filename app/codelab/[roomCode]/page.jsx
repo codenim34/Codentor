@@ -20,7 +20,8 @@ import {
   X,
   Check,
   Loader2,
-  Share2
+  Share2,
+  ArrowLeft
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -51,6 +52,9 @@ export default function CodeLabSession() {
   const [participants, setParticipants] = useState([]);
   const [lastUpdateFromServer, setLastUpdateFromServer] = useState(null);
   const [hasInitialized, setHasInitialized] = useState(false);
+  const [showCopiedNotification, setShowCopiedNotification] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(600); // Open wide by default
+  const [isResizing, setIsResizing] = useState(false);
 
   // Pusher real-time collaboration
   useEffect(() => {
@@ -332,7 +336,8 @@ export default function CodeLabSession() {
     try {
       if (navigator.clipboard && window.isSecureContext) {
         await navigator.clipboard.writeText(roomCode);
-        toast.success("Room code copied! Share it with others to collaborate.");
+        setShowCopiedNotification(true);
+        setTimeout(() => setShowCopiedNotification(false), 2000);
       } else {
         // Fallback for older browsers
         const textArea = document.createElement("textarea");
@@ -343,7 +348,8 @@ export default function CodeLabSession() {
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
-        toast.success("Room code copied! Share it with others to collaborate.");
+        setShowCopiedNotification(true);
+        setTimeout(() => setShowCopiedNotification(false), 2000);
       }
     } catch (error) {
       console.error('Failed to copy:', error);
@@ -423,10 +429,46 @@ export default function CodeLabSession() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-900">
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out;
+        }
+      `}</style>
+      {/* Global overlay to capture mouse while resizing */}
+      {isResizing && (
+        <div
+          onMouseMove={(e) => {
+            const viewportWidth = window.innerWidth;
+            const maxWidth = Math.min(Math.floor(viewportWidth * 0.9), 1200);
+            const newWidth = Math.min(maxWidth, Math.max(240, e.clientX));
+            setSidebarWidth(newWidth);
+          }}
+          onTouchMove={(e) => {
+            if (e.touches && e.touches[0]) {
+              const clientX = e.touches[0].clientX;
+              const viewportWidth = window.innerWidth;
+              const maxWidth = Math.min(Math.floor(viewportWidth * 0.9), 1200);
+              const newWidth = Math.min(maxWidth, Math.max(240, clientX));
+              setSidebarWidth(newWidth);
+            }
+          }}
+          onMouseUp={() => setIsResizing(false)}
+          onTouchEnd={() => setIsResizing(false)}
+          onMouseLeave={() => setIsResizing(false)}
+          className="fixed inset-0 z-40"
+          style={{ cursor: 'ew-resize' }}
+        />
+      )}
+      
 
       {/* Header */}
       <header className="bg-gray-800 border-b border-emerald-900/30 px-6 py-1">
         <div className="flex items-center justify-between">
+          
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-green-600 rounded-lg flex items-center justify-center">
@@ -436,10 +478,15 @@ export default function CodeLabSession() {
                 <h1 className="text-white font-semibold">CodeLab Session</h1>
                 <button
                   onClick={handleCopyRoomCode}
-                  className="text-sm text-gray-400 hover:text-emerald-400 transition-colors flex items-center"
+                  className="text-sm text-gray-400 hover:text-emerald-400 transition-colors flex items-center relative"
                 >
                   Room: {roomCode}
                   <Copy className="w-3 h-3 ml-1" />
+                  {showCopiedNotification && (
+                    <span className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-emerald-500 text-white text-xs px-2 py-1 rounded shadow-lg animate-fadeIn">
+                      Copied!
+                    </span>
+                  )}
                 </button>
               </div>
             </div>
@@ -448,13 +495,18 @@ export default function CodeLabSession() {
           <div className="flex items-center space-x-4">
             {/* AI Assistant Toggle */}
             <button
-              onClick={() => setShowAISidebar(!showAISidebar)}
+              onClick={() => {
+                if (!showAISidebar) {
+                  setSidebarWidth(600);
+                  setShowAISidebar(true);
+                }
+              }}
               className={`p-2 rounded-lg transition-colors ${
                 showAISidebar 
                   ? "bg-emerald-500/20 text-emerald-400" 
                   : "bg-gray-700 hover:bg-gray-600 text-gray-300"
               }`}
-              title={showAISidebar ? "Hide AI Assistant" : "Show AI Assistant"}
+              title="AI Assistant"
             >
               <Sparkles className="w-4 h-4" />
             </button>
@@ -524,16 +576,16 @@ export default function CodeLabSession() {
       <div className="flex-1 flex overflow-hidden">
         {/* AI Assistant Sidebar */}
         {showAISidebar && (
-          <div className="w-80 bg-gray-800 border-r border-emerald-900/30 flex flex-col">
-            {/* AI Assistant Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-emerald-900/30">
-              <div className="flex items-center space-x-2">
-                <Sparkles className="w-4 h-4 text-emerald-400" />
-                <h3 className="text-white font-medium">AI Assistant</h3>
-              </div>
+          <div 
+            className={`bg-gray-800 border-r border-emerald-900/30 flex flex-col ${isResizing ? '' : 'transition-all duration-300'} relative`}
+            style={{ width: `${sidebarWidth}px` }}
+          >
+            {/* Slim top bar with only close */}
+            <div className="flex items-center justify-end px-2 py-2 border-b border-emerald-900/30">
               <button
                 onClick={() => setShowAISidebar(false)}
                 className="p-1 hover:bg-gray-700 rounded transition-colors"
+                title="Close assistant"
               >
                 <X className="w-4 h-4 text-gray-400" />
               </button>
@@ -546,8 +598,17 @@ export default function CodeLabSession() {
                 language={language} 
                 onCodeUpdate={handleAICodeUpdate}
                 isSidebar={true}
+                sidebarWidth={sidebarWidth}
               />
             </div>
+
+            {/* Drag resize handle at the right edge */}
+            <div
+              onMouseDown={() => setIsResizing(true)}
+              onTouchStart={() => setIsResizing(true)}
+              className="absolute top-0 right-0 h-full w-2 md:w-3 cursor-col-resize bg-transparent hover:bg-emerald-500/30"
+              title="Drag to resize"
+            />
           </div>
         )}
 

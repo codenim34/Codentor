@@ -18,7 +18,33 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 
-export default function AIAssistant({ code, language, onCodeUpdate, isSidebar = false }) {
+// Minimal markdown → HTML renderer: supports **bold**, `inline code`, and ```fenced code```
+function escapeHtml(text) {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function renderMarkdown(md) {
+  if (!md) return "";
+  // Escape first to avoid HTML injection
+  let html = escapeHtml(md);
+  // Fenced code blocks ```lang\ncode\n```
+  html = html.replace(/```(\w+)?\n([\s\S]*?)```/g, (m, lang, code) => {
+    const language = lang ? `language-${lang}` : "";
+    return `<pre class=\"ai-pre\"><code class=\"${language}\">${code.replace(/\n/g, "<br/>")}</code></pre>`;
+  });
+  // Inline code `code`
+  html = html.replace(/`([^`]+)`/g, (m, code) => `<code class=\"ai-inline\">${code}</code>`);
+  // Bold **text**
+  html = html.replace(/\*\*([^*]+)\*\*/g, (m, text) => `<strong>${text}</strong>`);
+  // Newlines to <br/>
+  html = html.replace(/\n/g, "<br/>");
+  return html;
+}
+
+export default function AIAssistant({ code, language, onCodeUpdate, isSidebar = false, sidebarWidth = 320 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState([
@@ -71,6 +97,14 @@ export default function AIAssistant({ code, language, onCodeUpdate, isSidebar = 
       }
     }
   }, []);
+
+  // Sidebar mode renders always; floating mode uses isOpen
+  useEffect(() => {
+    if (isSidebar) {
+      // ensure no floating-specific state interferes
+      setIsMinimized(false);
+    }
+  }, [isSidebar]);
 
   // Scroll to bottom of chat
   useEffect(() => {
@@ -236,74 +270,27 @@ export default function AIAssistant({ code, language, onCodeUpdate, isSidebar = 
     }
   };
 
-  if (!isOpen) {
-    if (isSidebar) {
+  if (!isSidebar) {
+    if (!isOpen) {
       return (
-        <div className="h-full flex items-center justify-center">
-          <button
-            onClick={() => setIsOpen(true)}
-            className="flex flex-col items-center space-y-2 p-6 text-gray-400 hover:text-emerald-400 transition-colors"
-          >
-            <Sparkles className="w-8 h-8" />
-            <span className="text-sm">Open AI Assistant</span>
-          </button>
-        </div>
+        <button
+          onClick={() => setIsOpen(true)}
+          className="fixed bottom-6 right-6 bg-gradient-to-br from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white p-4 rounded-full shadow-2xl hover:shadow-emerald-500/50 transition-all duration-300 hover:scale-110 z-50 group"
+          title="AI Assistant"
+        >
+          <Sparkles className="w-6 h-6 animate-pulse" />
+          <span className="absolute -top-1 -right-1 flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+          </span>
+        </button>
       );
     }
-    
-    return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 bg-gradient-to-br from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white p-4 rounded-full shadow-2xl hover:shadow-emerald-500/50 transition-all duration-300 hover:scale-110 z-50 group"
-        title="AI Assistant"
-      >
-        <Sparkles className="w-6 h-6 animate-pulse" />
-        <span className="absolute -top-1 -right-1 flex h-3 w-3">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-        </span>
-      </button>
-    );
   }
 
   if (isSidebar) {
     return (
       <div className="h-full flex flex-col bg-gray-800">
-        {/* Header */}
-        <div className="flex items-center justify-between p-3 border-b border-emerald-900/30">
-          <div className="flex items-center space-x-2">
-            <div className="relative">
-              <Sparkles className="w-4 h-4 text-emerald-400" />
-              {isLoading && (
-                <Loader2 className="w-3 h-3 text-emerald-400 absolute -top-1 -right-1 animate-spin" />
-              )}
-            </div>
-            <span className="font-semibold text-white text-sm">AI Assistant</span>
-            <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">
-              Ready to Help
-            </span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <button
-              onClick={() => setVoiceEnabled(!voiceEnabled)}
-              className="p-1.5 hover:bg-gray-700 rounded-lg transition-colors"
-              title={voiceEnabled ? "Disable voice" : "Enable voice"}
-            >
-              {voiceEnabled ? (
-                <Volume2 className="w-3 h-3 text-emerald-400" />
-              ) : (
-                <VolumeX className="w-3 h-3 text-gray-500" />
-              )}
-            </button>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="p-1.5 hover:bg-gray-700 rounded-lg transition-colors"
-            >
-              <X className="w-3 h-3 text-gray-400" />
-            </button>
-          </div>
-        </div>
-
         {/* Messages */}
         <div 
           ref={chatContainerRef}
@@ -332,40 +319,47 @@ export default function AIAssistant({ code, language, onCodeUpdate, isSidebar = 
                     <Bot className="w-3 h-3" />
                   )}
                 </div>
-                <div
-                  className={`rounded-lg px-3 py-2 ${
-                    message.role === 'user'
-                      ? 'bg-blue-500/20 text-white'
-                      : 'bg-gray-700 text-gray-100'
-                  }`}
-                >
-                  <div className="text-xs whitespace-pre-wrap break-words">
-                    {message.content}
-                  </div>
-                  {message.newCode && (
-                    <div className="mt-2 border border-emerald-500/30 rounded-lg overflow-hidden">
-                      <div className="bg-emerald-500/10 px-2 py-1 flex items-center justify-between">
-                        <span className="text-xs text-emerald-400 font-semibold flex items-center space-x-1">
-                          <Code className="w-3 h-3" />
-                          <span>Generated Code</span>
-                        </span>
-                        {onCodeUpdate && (
-                          <button
-                            onClick={() => {
-                              onCodeUpdate(message.newCode);
-                              toast.success('Code applied to editor!');
-                            }}
-                            className="text-xs bg-emerald-500 hover:bg-emerald-600 text-white px-2 py-1 rounded transition-colors"
-                          >
-                            Apply
-                          </button>
-                        )}
-                      </div>
-                      <pre className="bg-gray-900 p-2 text-xs overflow-x-auto">
-                        <code className="text-gray-300">{message.newCode}</code>
-                      </pre>
-                    </div>
-                  )}
+                       <div
+                         className={`rounded-lg px-3 py-2 ${
+                           message.role === 'user'
+                             ? 'bg-blue-500/20 text-white'
+                             : 'bg-gray-700 text-gray-100'
+                         }`}
+                       >
+                         <div
+                           className={`${isSidebar ? 'text-xs' : 'text-sm'} break-words leading-relaxed ai-markdown`}
+                           dangerouslySetInnerHTML={{ __html: renderMarkdown(message.content) }}
+                         />
+                         {message.newCode && (
+                           <div className="mt-2 border border-emerald-500/30 rounded-lg overflow-hidden">
+                             <div className="bg-emerald-500/10 px-2 py-1 flex items-center justify-between">
+                               <span className={`text-emerald-400 font-semibold flex items-center space-x-1 ${
+                                 isSidebar ? 'text-xs' : 'text-sm'
+                               }`}>
+                                 <Code className={isSidebar ? "w-3 h-3" : "w-4 h-4"} />
+                                 <span>Generated Code</span>
+                               </span>
+                               {onCodeUpdate && (
+                                 <button
+                                   onClick={() => {
+                                     onCodeUpdate(message.newCode);
+                                     toast.success('Code applied to editor!');
+                                   }}
+                                   className={`bg-emerald-500 hover:bg-emerald-600 text-white px-2 py-1 rounded transition-colors ${
+                                     isSidebar ? 'text-xs' : 'text-sm'
+                                   }`}
+                                 >
+                                   Apply
+                                 </button>
+                               )}
+                             </div>
+                             <pre className={`bg-gray-900 p-2 overflow-x-auto ${
+                               isSidebar ? 'text-xs' : 'text-sm'
+                             }`}>
+                               <code className="text-gray-300">{message.newCode}</code>
+                             </pre>
+                           </div>
+                         )}
                   <div className="text-xs text-gray-500 mt-1">
                     {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </div>
@@ -391,15 +385,17 @@ export default function AIAssistant({ code, language, onCodeUpdate, isSidebar = 
         <div className="p-3 border-t border-emerald-900/30 bg-gray-900/50">
           <div className="flex items-end space-x-2">
             <div className="flex-1 relative">
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Ask me anything about your code..."
-                rows={1}
-                className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 pr-10 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50 placeholder-gray-500 text-xs max-h-24"
-                style={{ minHeight: '32px' }}
-              />
+                     <textarea
+                       value={input}
+                       onChange={(e) => setInput(e.target.value)}
+                       onKeyPress={handleKeyPress}
+                       placeholder="Ask me anything about your code..."
+                       rows={1}
+                       className={`w-full bg-gray-700 text-white rounded-lg px-3 py-2 pr-10 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50 placeholder-gray-500 max-h-24 ${
+                         isSidebar ? 'text-xs' : 'text-sm'
+                       }`}
+                       style={{ minHeight: '32px' }}
+                     />
               <button
                 onClick={toggleVoiceRecognition}
                 className={`absolute right-2 bottom-2 p-1 rounded transition-colors ${
@@ -424,18 +420,20 @@ export default function AIAssistant({ code, language, onCodeUpdate, isSidebar = 
               )}
             </button>
           </div>
-          <div className="mt-1 text-xs text-gray-500 flex items-center justify-between">
-            <span>Press Enter to send</span>
-            {isSpeaking && (
-              <button
-                onClick={stopSpeaking}
-                className="text-emerald-400 hover:text-emerald-300 flex items-center space-x-1"
-              >
-                <VolumeX className="w-3 h-3" />
-                <span>Stop</span>
-              </button>
-            )}
-          </div>
+                 <div className={`mt-1 text-gray-500 flex items-center justify-between ${
+                   isSidebar ? 'text-xs' : 'text-sm'
+                 }`}>
+                   <span>Press Enter to send</span>
+                   {isSpeaking && (
+                     <button
+                       onClick={stopSpeaking}
+                       className="text-emerald-400 hover:text-emerald-300 flex items-center space-x-1"
+                     >
+                       <VolumeX className={isSidebar ? "w-3 h-3" : "w-4 h-4"} />
+                       <span>Stop</span>
+                     </button>
+                   )}
+                 </div>
         </div>
       </div>
     );
@@ -660,6 +658,11 @@ export default function AIAssistant({ code, language, onCodeUpdate, isSidebar = 
         .scrollbar-track-gray-800::-webkit-scrollbar-track {
           background-color: #1f2937;
         }
+        /* Markdown styling */
+        .ai-markdown strong { color: #e5e7eb; font-weight: 700; }
+        .ai-markdown code.ai-inline { background: #111827; color: #d1d5db; padding: 2px 6px; border-radius: 4px; }
+        .ai-pre { background: #111827; padding: 12px; border-radius: 8px; overflow-x: auto; border: 1px solid rgba(16,185,129,0.2); }
+        .ai-pre code { color: #d1d5db; }
       `}</style>
     </div>
   );

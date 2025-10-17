@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import Header from "./Header";
+import DrawerHeader from "./DrawerHeader";
 import dynamic from 'next/dynamic';
 
 // Dynamically import TourGuide with no SSR
@@ -29,6 +30,17 @@ export default function ClientLayout({ children }) {
     pathname === "/not-found" ||
     pathname.startsWith("/admin");
 
+  // Paths that should use drawer header (all except dashboard and codelab)
+  const useDrawerHeader = !isHomePage && 
+    !normalizedPath.startsWith("/dashboard") && 
+    !normalizedPath.startsWith("/codelab") &&
+    !isExcludedPath;
+
+  // Paths that should use regular header (dashboard only)
+  const useRegularHeader = !isHomePage && 
+    normalizedPath.startsWith("/dashboard") && 
+    !isExcludedPath;
+
   // Don't render any layout components for admin paths
   if (pathname.startsWith("/admin")) {
     return children;
@@ -36,12 +48,13 @@ export default function ClientLayout({ children }) {
 
   return (
     <>
-      {/* Conditionally render Header */}
-      {!isHomePage && <Header />}
+      {/* Conditionally render Header or DrawerHeader */}
+      {useRegularHeader && <Header />}
+      {useDrawerHeader && <DrawerHeader />}
 
       <main
         className={`w-full transition-all duration-300 ${
-          !isHomePage ? "pt-16" : ""
+          useRegularHeader ? "pt-16" : ""
         }`}
       >
         <div className="flex items-start justify-center min-h-screen w-full">

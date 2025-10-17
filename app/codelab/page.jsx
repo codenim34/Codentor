@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { Code2, Users, Sparkles, Play, ArrowRight, Zap } from "lucide-react";
+import { Code2, Users, Sparkles, Play, ArrowRight, Zap, ArrowLeft } from "lucide-react";
 import { nanoid } from "nanoid";
 
 export default function CodeLabPage() {
@@ -62,6 +62,18 @@ export default function CodeLabPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-emerald-950">
+      {/* Back Button */}
+      <div className="absolute top-4 left-4 z-40">
+        <button
+          onClick={() => router.back()}
+          className="flex items-center space-x-2 bg-gray-800/90 backdrop-blur-sm border border-emerald-500/30 rounded-lg px-3 py-2 text-emerald-400 hover:bg-gray-700/90 transition-all duration-200 shadow-lg"
+          title="Go Back"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span className="text-sm font-medium">Back</span>
+        </button>
+      </div>
+
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute w-96 h-96 -top-48 -left-48 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob" />

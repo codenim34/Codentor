@@ -314,7 +314,7 @@ const LearnPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-emerald-950">
       {/* Fixed Search Bar - Compact Version */}
-      <div className="fixed top-16 left-0 right-0 z-40 bg-black/95 backdrop-blur-xl shadow-xl border-b border-emerald-900/30">
+      <div className="fixed top-0 left-0 right-0 z-40 bg-black/95 backdrop-blur-xl shadow-xl border-b border-emerald-900/30">
         <div className="max-w-7xl mx-auto px-4 py-3 sm:px-6 lg:px-8">
           {/* Search and Actions in One Row */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
@@ -364,7 +364,7 @@ const LearnPage = () => {
       </div>
 
       {/* Main Content with proper top padding */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-12">
         {/* Page Header and Filter Pills in One Section */}
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
