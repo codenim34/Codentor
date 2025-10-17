@@ -14,6 +14,11 @@ import {
   Trophy,
   HelpCircle,
   ChevronLeft,
+  ClipboardList,
+  Rss,
+  Users,
+  GraduationCap,
+  FlaskConical,
 } from "lucide-react";
 
 const DrawerHeader = () => {
@@ -21,13 +26,13 @@ const DrawerHeader = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const navLinks = [
-    { href: "/dashboard", label: "Home" },
-    { href: "/tasks", label: "Task Manager" },
-    { href: "/feed", label: "Feed" },
-    { href: "/connections", label: "Connections" },
-    { href: "/learn", label: "Learn Hub" },
-    { href: "/codelab", label: "Code Lab" },
-    { href: "/quests", label: "Challenges" },
+    { href: "/dashboard", label: "Home", icon: Home },
+    { href: "/tasks", label: "Task Manager", icon: ClipboardList },
+    { href: "/feed", label: "Feed", icon: Rss },
+    { href: "/connections", label: "Connections", icon: Users },
+    { href: "/learn", label: "Learn Hub", icon: GraduationCap },
+    { href: "/codelab", label: "Code Lab", icon: FlaskConical },
+    { href: "/quests", label: "Challenges", icon: Trophy },
   ];
 
   return (
