@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { format, parse, startOfWeek, getDay } from "date-fns";
@@ -26,10 +26,16 @@ const DnDCalendar = withDragAndDrop(Calendar);
 
 export default function CalendarView({ tasks, onTaskUpdated, onEditTask }) {
   const [view, setView] = useState('month'); // 'month', 'week', 'day'
+  const [localTasks, setLocalTasks] = useState(tasks);
 
-  // Convert tasks to calendar events
+  // Sync local tasks with props
+  useEffect(() => {
+    setLocalTasks(tasks);
+  }, [tasks]);
+
+  // Convert tasks to calendar events (use localTasks for immediate updates)
   const events = useMemo(() => {
-    return tasks.map(task => ({
+    return localTasks.map(task => ({
       id: task._id,
       title: task.title,
       start: new Date(task.dueDate),
@@ -37,7 +43,7 @@ export default function CalendarView({ tasks, onTaskUpdated, onEditTask }) {
       resource: task,
       allDay: false,
     }));
-  }, [tasks]);
+  }, [localTasks]);
 
   // Handle event click
   const handleSelectEvent = useCallback((event) => {
@@ -51,6 +57,16 @@ export default function CalendarView({ tasks, onTaskUpdated, onEditTask }) {
       return;
     }
 
+    // Optimistic update - update UI immediately
+    const updatedTasks = localTasks.map(task => 
+      task._id === event.id 
+        ? { ...task, dueDate: start.toISOString() }
+        : task
+    );
+    setLocalTasks(updatedTasks);
+    toast.success("Task rescheduled successfully!");
+
+    // Update server in background
     try {
       const response = await fetch('/api/tasks', {
         method: 'PATCH',
@@ -63,13 +79,14 @@ export default function CalendarView({ tasks, onTaskUpdated, onEditTask }) {
 
       const data = await response.json();
 
-      if (data.success) {
-        toast.success("Task rescheduled successfully!");
-        onTaskUpdated();
-      } else {
+      if (!data.success) {
+        // Revert on error
+        setLocalTasks(tasks);
         toast.error(data.error || "Failed to reschedule task");
       }
     } catch (error) {
+      // Revert on error
+      setLocalTasks(tasks);
       console.error("Error rescheduling task:", error);
       toast.error("Failed to reschedule task");
     }

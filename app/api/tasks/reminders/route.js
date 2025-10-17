@@ -5,7 +5,7 @@ import Task from '@/lib/models/taskModel';
 import User from '@/lib/models/userModel';
 import Notification from '@/lib/models/notificationModel';
 import PushSubscription from '@/lib/models/pushSubscriptionModel';
-import { sendTaskReminderEmail } from '@/lib/utils/emailService';
+const { sendTaskReminderEmail } = require('@/lib/utils/emailService');
 import { sendTaskReminderPush } from '@/lib/utils/pushNotification';
 import { pusher } from '@/lib/pusher';
 

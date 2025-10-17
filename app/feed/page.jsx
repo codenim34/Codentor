@@ -223,16 +223,7 @@ export default function FeedPage() {
           >
             My Posts
           </button>
-          <button
-            onClick={() => setActiveTab("connections")}
-            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              activeTab === "connections"
-                ? "bg-emerald-500 text-white"
-                : "text-gray-400 hover:text-emerald-400"
-            }`}
-          >
-            Connections
-          </button>
+        
         </div>
 
         {/* Post Composer - Only show for All Posts and My Posts tabs */}

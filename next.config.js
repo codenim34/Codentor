@@ -1,4 +1,5 @@
 const nextConfig = {
+  reactStrictMode: false, // Disable for react-beautiful-dnd compatibility
   async rewrites() {
     return [
       {

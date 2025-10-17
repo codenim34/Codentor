@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { FiBell, FiMail, FiSmartphone, FiCheck, FiX } from "react-icons/fi";
+import EmailTest from "./EmailTest";
 
 export default function NotificationSettings() {
   const [pushEnabled, setPushEnabled] = useState(false);
@@ -148,6 +149,9 @@ export default function NotificationSettings() {
       </div>
 
       <div className="space-y-4">
+        {/* Email Test */}
+        <EmailTest />
+
         {/* Email Notifications */}
         <div className="bg-gray-900/50 border border-emerald-500/10 rounded-lg p-4">
           <div className="flex items-start gap-4">

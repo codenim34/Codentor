@@ -1,19 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { FiEdit2, FiTrash2, FiExternalLink, FiClock } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import { format, isPast, isToday, isTomorrow } from "date-fns";
 
-export default function KanbanBoard({ tasks, onTaskUpdated, onEditTask }) {
+export default function KanbanBoardClient({ tasks, onTaskUpdated, onEditTask }) {
+  const [mounted, setMounted] = useState(false);
   const [deletingId, setDeletingId] = useState(null);
+  const [localTasks, setLocalTasks] = useState(tasks);
 
-  // Organize tasks by status
+  // Prevent SSR hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Sync local tasks with props
+  useEffect(() => {
+    setLocalTasks(tasks);
+  }, [tasks]);
+
+  // Organize tasks by status (use localTasks for immediate updates)
   const columns = {
-    pending: tasks.filter(t => t.status === 'pending'),
-    'in-progress': tasks.filter(t => t.status === 'in-progress'),
-    completed: tasks.filter(t => t.status === 'completed'),
+    pending: localTasks.filter(t => t.status === 'pending'),
+    'in-progress': localTasks.filter(t => t.status === 'in-progress'),
+    completed: localTasks.filter(t => t.status === 'completed'),
   };
 
   const columnTitles = {
@@ -29,14 +41,10 @@ export default function KanbanBoard({ tasks, onTaskUpdated, onEditTask }) {
   };
 
   const handleDragEnd = async (result) => {
-    console.log('Drag ended:', result);
     const { destination, source, draggableId } = result;
 
     // Dropped outside a droppable area
-    if (!destination) {
-      console.log('No destination');
-      return;
-    }
+    if (!destination) return;
 
     // Dropped in the same position
     if (
@@ -48,6 +56,16 @@ export default function KanbanBoard({ tasks, onTaskUpdated, onEditTask }) {
 
     const newStatus = destination.droppableId;
 
+    // Optimistic update - update UI immediately
+    const updatedTasks = localTasks.map(task => 
+      task._id === draggableId 
+        ? { ...task, status: newStatus }
+        : task
+    );
+    setLocalTasks(updatedTasks);
+    toast.success(`Task moved to ${columnTitles[newStatus]}!`);
+
+    // Update server in background
     try {
       const response = await fetch('/api/tasks', {
         method: 'PATCH',
@@ -60,13 +78,14 @@ export default function KanbanBoard({ tasks, onTaskUpdated, onEditTask }) {
 
       const data = await response.json();
 
-      if (data.success) {
-        toast.success(`Task moved to ${columnTitles[newStatus]}!`);
-        onTaskUpdated();
-      } else {
+      if (!data.success) {
+        // Revert on error
+        setLocalTasks(tasks);
         toast.error(data.error || "Failed to update task");
       }
     } catch (error) {
+      // Revert on error
+      setLocalTasks(tasks);
       console.error("Error updating task:", error);
       toast.error("Failed to update task");
     }
@@ -130,8 +149,8 @@ export default function KanbanBoard({ tasks, onTaskUpdated, onEditTask }) {
             {...provided.draggableProps}
             {...provided.dragHandleProps}
             className={`bg-gray-800 rounded-lg p-4 mb-3 ${getPriorityColor(task.priority)} ${
-              snapshot.isDragging ? 'shadow-2xl ring-2 ring-emerald-500' : ''
-            } hover:shadow-lg transition-all cursor-move`}
+              snapshot.isDragging ? 'shadow-2xl ring-2 ring-emerald-500 opacity-90' : ''
+            } hover:shadow-lg transition-all cursor-grab active:cursor-grabbing`}
           >
             {/* Title */}
             <h4 className="text-white font-semibold mb-2 line-clamp-2">
@@ -212,6 +231,21 @@ export default function KanbanBoard({ tasks, onTaskUpdated, onEditTask }) {
       </Draggable>
     );
   };
+
+  if (!mounted) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="flex flex-col">
+            <div className="rounded-t-xl border-t border-x p-4 bg-gray-800/50 animate-pulse">
+              <div className="h-6 bg-gray-700 rounded w-1/2"></div>
+            </div>
+            <div className="rounded-b-xl border-b border-x p-4 min-h-[500px] bg-gray-800/50"></div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>
