@@ -51,41 +51,41 @@ export default function InterviewLobby() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto bg-gray-900/50 border border-emerald-500/20 rounded-xl p-6">
-        <h1 className="text-3xl font-bold text-white mb-2">AI Interview</h1>
-        <p className="text-gray-400 mb-6">Select a role and preferences. The AI interviewer will conduct a {mode === 'voice' ? 'voice' : 'text'} interview.</p>
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-emerald-950 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto bg-gray-900/50 border border-emerald-800/30 rounded-xl p-8 hover:border-emerald-500/50 hover:shadow-green-glow transition-all duration-300">
+        <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent mb-3">AI Interview</h1>
+        <p className="text-gray-300 mb-6">Select a role and preferences. The AI interviewer will conduct a {mode === 'voice' ? 'voice' : 'text'} interview.</p>
 
         {error && <div className="mb-4 text-red-400">{error}</div>}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-gray-300 text-sm mb-1">Role</label>
-            <select value={role} onChange={e=>setRole(e.target.value)} className="w-full px-3 py-2 bg-gray-800 border border-emerald-500/20 rounded-lg text-gray-200">
+            <label className="block text-gray-300 text-sm font-medium mb-2">Role</label>
+            <select value={role} onChange={e=>setRole(e.target.value)} className="w-full px-4 py-3 bg-black/40 border border-emerald-800/30 rounded-lg text-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all">
               {ROLES.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-gray-300 text-sm mb-1">Level</label>
-            <select value={level} onChange={e=>setLevel(e.target.value)} className="w-full px-3 py-2 bg-gray-800 border border-emerald-500/20 rounded-lg text-gray-200">
+            <label className="block text-gray-300 text-sm font-medium mb-2">Level</label>
+            <select value={level} onChange={e=>setLevel(e.target.value)} className="w-full px-4 py-3 bg-black/40 border border-emerald-800/30 rounded-lg text-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all">
               {LEVELS.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="block text-gray-300 text-sm mb-1">Mode</label>
-            <select value={mode} onChange={e=>setMode(e.target.value)} className="w-full px-3 py-2 bg-gray-800 border border-emerald-500/20 rounded-lg text-gray-200">
+            <label className="block text-gray-300 text-sm font-medium mb-2">Mode</label>
+            <select value={mode} onChange={e=>setMode(e.target.value)} className="w-full px-4 py-3 bg-black/40 border border-emerald-800/30 rounded-lg text-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all">
               <option value="text">Text (chat)</option>
               <option value="voice">Voice (browser APIs)</option>
             </select>
           </div>
           <div>
-            <label className="block text-gray-300 text-sm mb-1">Duration (minutes)</label>
-            <input type="number" min={15} max={120} value={duration} onChange={e=>setDuration(parseInt(e.target.value||"45",10))} className="w-full px-3 py-2 bg-gray-800 border border-emerald-500/20 rounded-lg text-gray-200" />
+            <label className="block text-gray-300 text-sm font-medium mb-2">Duration (minutes)</label>
+            <input type="number" min={15} max={120} value={duration} onChange={e=>setDuration(parseInt(e.target.value||"45",10))} className="w-full px-4 py-3 bg-black/40 border border-emerald-800/30 rounded-lg text-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all" />
           </div>
         </div>
 
         <div className="text-right">
-          <button onClick={startInterview} disabled={starting} className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg disabled:opacity-50">
+          <button onClick={startInterview} disabled={starting} className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white rounded-lg font-medium disabled:opacity-50 shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all duration-300">
             {starting ? 'Starting...' : 'Start Interview'}
           </button>
         </div>

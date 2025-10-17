@@ -108,14 +108,14 @@ export default function TasksPage() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-emerald-950 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-white mb-2">Task Management</h1>
-              <p className="text-gray-400">Organize your tasks and boost productivity</p>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent">Task Management</h1>
+              <p className="text-gray-300">Organize your tasks and boost productivity</p>
             </div>
             <button
               onClick={handleCreateTask}
@@ -128,20 +128,20 @@ export default function TasksPage() {
 
           {/* Stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-            <div className="bg-gray-800/50 border border-emerald-500/20 rounded-xl p-4">
+            <div className="bg-gray-900/50 border border-emerald-800/30 rounded-xl p-4 hover:border-emerald-500/50 hover:shadow-green-glow transition-all duration-300">
               <div className="text-2xl font-bold text-white">{stats.total}</div>
               <div className="text-sm text-gray-400">Total Tasks</div>
             </div>
-            <div className="bg-gray-800/50 border border-yellow-500/20 rounded-xl p-4">
+            <div className="bg-gray-900/50 border border-yellow-800/30 rounded-xl p-4 hover:border-yellow-500/50 transition-all duration-300">
               <div className="text-2xl font-bold text-yellow-400">{stats.pending}</div>
               <div className="text-sm text-gray-400">To Do</div>
             </div>
-            <div className="bg-gray-800/50 border border-blue-500/20 rounded-xl p-4">
+            <div className="bg-gray-900/50 border border-blue-800/30 rounded-xl p-4 hover:border-blue-500/50 transition-all duration-300">
               <div className="text-2xl font-bold text-blue-400">{stats.inProgress}</div>
               <div className="text-sm text-gray-400">In Progress</div>
             </div>
-            <div className="bg-gray-800/50 border border-green-500/20 rounded-xl p-4">
-              <div className="text-2xl font-bold text-green-400">{stats.completed}</div>
+            <div className="bg-gray-900/50 border border-emerald-800/30 rounded-xl p-4 hover:border-emerald-500/50 hover:shadow-green-glow transition-all duration-300">
+              <div className="text-2xl font-bold text-emerald-400">{stats.completed}</div>
               <div className="text-sm text-gray-400">Completed</div>
             </div>
           </div>
@@ -149,7 +149,7 @@ export default function TasksPage() {
           {/* View Switcher and Filters */}
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
             {/* View Switcher */}
-            <div className="flex gap-2 bg-gray-800/50 border border-emerald-500/20 rounded-lg p-1">
+            <div className="flex gap-2 bg-black/40 border border-emerald-800/30 rounded-lg p-1">
               <button
                 onClick={() => setCurrentView('list')}
                 className={`px-4 py-2 rounded-md font-medium transition-all flex items-center gap-2 ${
@@ -191,8 +191,8 @@ export default function TasksPage() {
                 onClick={() => setCurrentFilter('all')}
                 className={`px-4 py-2 rounded-lg font-medium transition-all ${
                   currentFilter === 'all'
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:text-white border border-emerald-500/20'
+                    ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg shadow-emerald-500/30'
+                    : 'bg-black/40 text-gray-400 hover:text-emerald-400 border border-emerald-800/30 hover:border-emerald-500/50'
                 }`}
               >
                 All Tasks
@@ -201,8 +201,8 @@ export default function TasksPage() {
                 onClick={() => setCurrentFilter('today')}
                 className={`px-4 py-2 rounded-lg font-medium transition-all ${
                   currentFilter === 'today'
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:text-white border border-emerald-500/20'
+                    ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg shadow-emerald-500/30'
+                    : 'bg-black/40 text-gray-400 hover:text-emerald-400 border border-emerald-800/30 hover:border-emerald-500/50'
                 }`}
               >
                 Today
@@ -211,8 +211,8 @@ export default function TasksPage() {
                 onClick={() => setCurrentFilter('remaining')}
                 className={`px-4 py-2 rounded-lg font-medium transition-all ${
                   currentFilter === 'remaining'
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:text-white border border-emerald-500/20'
+                    ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg shadow-emerald-500/30'
+                    : 'bg-black/40 text-gray-400 hover:text-emerald-400 border border-emerald-800/30 hover:border-emerald-500/50'
                 }`}
               >
                 Remaining
@@ -221,8 +221,8 @@ export default function TasksPage() {
                 onClick={() => setCurrentFilter('completed')}
                 className={`px-4 py-2 rounded-lg font-medium transition-all ${
                   currentFilter === 'completed'
-                    ? 'bg-emerald-500 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:text-white border border-emerald-500/20'
+                    ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg shadow-emerald-500/30'
+                    : 'bg-black/40 text-gray-400 hover:text-emerald-400 border border-emerald-800/30 hover:border-emerald-500/50'
                 }`}
               >
                 Completed
@@ -243,7 +243,7 @@ export default function TasksPage() {
         <div className="flex justify-end mb-4">
           <button
             onClick={() => setShowSettings(!showSettings)}
-            className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg font-medium transition-all border border-emerald-500/20"
+            className="px-4 py-2 bg-black/40 hover:bg-emerald-950/50 text-gray-300 hover:text-emerald-400 rounded-lg font-medium transition-all border border-emerald-800/30 hover:border-emerald-500/50"
           >
             {showSettings ? 'Hide' : 'Show'} Notification Settings
           </button>
@@ -251,7 +251,7 @@ export default function TasksPage() {
 
         {/* Task View */}
         {loading ? (
-          <div className="bg-gray-900/50 border border-emerald-500/20 rounded-xl p-6">
+          <div className="bg-gray-900/50 border border-emerald-800/30 rounded-xl p-6">
             <div className="text-center py-16">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500 mx-auto mb-4"></div>
               <p className="text-gray-400">Loading tasks...</p>
@@ -260,7 +260,7 @@ export default function TasksPage() {
         ) : (
           <>
             {currentView === 'list' && (
-              <div className="bg-gray-900/50 border border-emerald-500/20 rounded-xl p-6">
+              <div className="bg-gray-900/50 border border-emerald-800/30 rounded-xl p-6 hover:border-emerald-500/50 hover:shadow-green-glow transition-all duration-300">
                 <TaskList
                   tasks={tasks}
                   onTaskUpdated={handleTaskUpdated}

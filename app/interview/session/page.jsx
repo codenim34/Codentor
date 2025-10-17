@@ -134,37 +134,38 @@ export default function InterviewSessionPage() {
     }
   };
 
-  if (loading) return <div className="pt-24 px-6 text-gray-400">Loading...</div>;
+  if (loading) return <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-emerald-950 pt-24 px-6 text-gray-400">Loading...</div>;
 
   if (summary) {
     return (
-      <div className="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto bg-gray-900/50 border border-emerald-500/20 rounded-xl p-6">
-          <h2 className="text-2xl font-bold text-white mb-4">Interview Summary</h2>
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-emerald-400 font-semibold mb-2">Score: {summary.score}/100</h3>
+      <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-emerald-950 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl mx-auto bg-gray-900/50 border border-emerald-800/30 rounded-xl p-8 hover:border-emerald-500/50 hover:shadow-green-glow transition-all duration-300">
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent mb-6">Interview Summary</h2>
+          <div className="space-y-6">
+            <div className="bg-black/30 p-6 rounded-lg border border-emerald-800/20">
+              <h3 className="text-emerald-400 font-semibold mb-3">Score</h3>
+              <p className="text-4xl font-bold text-white">{summary.score}/100</p>
             </div>
-            <div>
-              <h3 className="text-white font-semibold mb-2">Strengths</h3>
-              <ul className="list-disc pl-6 text-gray-300">
+            <div className="bg-black/30 p-6 rounded-lg border border-emerald-800/20">
+              <h3 className="text-white font-semibold mb-3">Strengths</h3>
+              <ul className="list-disc pl-6 text-gray-300 space-y-1">
                 {summary.strengths.map((s, i) => <li key={i}>{s}</li>)}
               </ul>
             </div>
-            <div>
-              <h3 className="text-white font-semibold mb-2">Areas for Improvement</h3>
-              <ul className="list-disc pl-6 text-gray-300">
+            <div className="bg-black/30 p-6 rounded-lg border border-emerald-800/20">
+              <h3 className="text-yellow-400 font-semibold mb-3">Areas for Improvement</h3>
+              <ul className="list-disc pl-6 text-gray-300 space-y-1">
                 {summary.weaknesses.map((w, i) => <li key={i}>{w}</li>)}
               </ul>
             </div>
-            <div>
-              <h3 className="text-white font-semibold mb-2">Recommendations</h3>
-              <ul className="list-disc pl-6 text-gray-300">
+            <div className="bg-black/30 p-6 rounded-lg border border-emerald-800/20">
+              <h3 className="text-white font-semibold mb-3">Recommendations</h3>
+              <ul className="list-disc pl-6 text-gray-300 space-y-1">
                 {summary.recommendations.map((r, i) => <li key={i}>{r}</li>)}
               </ul>
             </div>
             <div className="text-right">
-              <button onClick={() => router.push('/interview')} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg">Start New Interview</button>
+              <button onClick={() => router.push('/interview')} className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white rounded-lg font-medium shadow-lg shadow-emerald-500/30 transition-all">Start New Interview</button>
             </div>
           </div>
         </div>
@@ -173,40 +174,42 @@ export default function InterviewSessionPage() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto bg-gray-900/50 border border-emerald-500/20 rounded-xl p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="text-white font-semibold">Interview Session</div>
-          <div className="flex gap-2">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-emerald-950 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto bg-gray-900/50 border border-emerald-800/30 rounded-xl p-6 hover:border-emerald-500/50 hover:shadow-green-glow transition-all duration-300">
+        <div className="flex items-center justify-between mb-6">
+          <div className="text-white font-bold text-xl bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent">Interview Session</div>
+          <div className="flex gap-3">
             {mode === 'voice' && (
-              <button onClick={recording ? stopRecording : startRecording} className={`px-3 py-1 rounded ${recording ? 'bg-red-600' : 'bg-emerald-600'} text-white text-sm`}>
+              <button onClick={recording ? stopRecording : startRecording} className={`px-4 py-2 rounded-lg ${recording ? 'bg-red-600 hover:bg-red-700' : 'bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700'} text-white text-sm font-medium shadow-lg transition-all`}>
                 {recording ? '🔴 Stop Mic' : '🎤 Start Mic'}
               </button>
             )}
-            <button onClick={finishInterview} disabled={finishing} className="px-3 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded text-sm disabled:opacity-50">
+            <button onClick={finishInterview} disabled={finishing} className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg text-sm font-medium disabled:opacity-50 shadow-lg transition-all">
               {finishing ? 'Finishing...' : 'Finish Interview'}
             </button>
           </div>
         </div>
 
-        <div className="h-[420px] overflow-y-auto bg-gray-800/40 border border-emerald-500/10 rounded p-4 mb-4 space-y-2">
+        <div className="h-[420px] overflow-y-auto bg-black/40 border border-emerald-800/20 rounded-lg p-6 mb-6 space-y-4">
           {messages.map((m, i) => (
-            <div key={i} className={`${m.role === 'ai' ? 'text-emerald-300' : 'text-gray-200'}`}>
-              <span className="font-semibold">{m.role === 'ai' ? 'AI Interviewer: ' : 'You: '}</span>
-              {m.content}
+            <div key={i} className={`${m.role === 'ai' ? 'flex justify-start' : 'flex justify-end'}`}>
+              <div className={`max-w-3xl px-5 py-3 rounded-xl ${m.role === 'ai' ? 'bg-gray-800/90 border border-emerald-800/20 text-emerald-300' : 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg shadow-emerald-500/20'}`}>
+                <span className="font-semibold block mb-1">{m.role === 'ai' ? 'AI Interviewer' : 'You'}</span>
+                <span className={m.role === 'ai' ? 'text-gray-200' : 'text-white'}>{m.content}</span>
+              </div>
             </div>
           ))}
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           <input 
             value={input} 
             onChange={e=>setInput(e.target.value)} 
             onKeyDown={e => e.key === 'Enter' && sendMessage()}
             placeholder="Type your answer..." 
-            className="flex-1 px-3 py-2 bg-gray-800 border border-emerald-500/20 rounded-lg text-gray-200" 
+            className="flex-1 px-4 py-3 bg-black/40 border border-emerald-800/30 rounded-lg text-gray-200 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all placeholder-gray-500" 
           />
-          <button onClick={sendMessage} disabled={sending} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-lg text-white disabled:opacity-50">
+          <button onClick={sendMessage} disabled={sending} className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 rounded-lg text-white font-medium disabled:opacity-50 shadow-lg shadow-emerald-500/30 transition-all">
             {sending ? 'Sending...' : 'Send'}
           </button>
         </div>
