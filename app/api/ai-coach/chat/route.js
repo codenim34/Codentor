@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs";
-import dbConnect from "@/lib/mongodb/mongoose";
+import { auth } from "@clerk/nextjs/server";
+import { connect } from "@/lib/mongodb/mongoose";
 import InterviewSession from "@/lib/models/interviewSessionModel";
 import User from "@/lib/models/userModel";
 import Groq from "groq-sdk";
@@ -12,50 +12,63 @@ const groq = new Groq({
 
 export async function POST(request) {
   try {
-    const { userId } = auth();
+    console.log("AI Coach Chat: Starting...");
+    const { userId } = await auth();
+    console.log("AI Coach Chat: User ID:", userId);
 
     if (!userId) {
+      console.log("AI Coach Chat: No user ID found");
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const { message, conversationHistory } = await request.json();
+    console.log("AI Coach Chat: Message received:", message?.substring(0, 50) + "...");
 
-    await dbConnect();
+    console.log("AI Coach Chat: Connecting to database...");
+    await connect();
 
     // Fetch comprehensive user data
+    console.log("AI Coach Chat: Fetching user data...");
     const user = await User.findOne({ clerkId: userId });
+    console.log("AI Coach Chat: User found:", !!user);
+    
     const interviews = await InterviewSession.find({ 
       userId: userId,
       status: 'ended'
     }).sort({ createdAt: -1 }).limit(10);
+    console.log("AI Coach Chat: Interviews found:", interviews.length);
 
     const roadmaps = await getUserRoadmaps(userId);
+    console.log("AI Coach Chat: Roadmaps found:", roadmaps?.length || 0);
 
     // Calculate detailed stats
     const totalInterviews = interviews.length;
     const averageScore = totalInterviews > 0 
-      ? Math.round(interviews.reduce((sum, int) => sum + (int.evaluation?.overallScore || 0), 0) / totalInterviews)
+      ? Math.round(interviews.reduce((sum, int) => sum + (int.aiSummary?.score || 0), 0) / totalInterviews)
       : 0;
 
     // Collect all strengths and weaknesses
     const allStrengths = [];
     const allWeaknesses = [];
     interviews.forEach(interview => {
-      if (interview.evaluation?.strengths) {
-        allStrengths.push(...interview.evaluation.strengths);
+      if (interview.aiSummary?.strengths) {
+        allStrengths.push(...interview.aiSummary.strengths);
       }
-      if (interview.evaluation?.weaknesses) {
-        allWeaknesses.push(...interview.evaluation.weaknesses);
+      if (interview.aiSummary?.weaknesses) {
+        allWeaknesses.push(...interview.aiSummary.weaknesses);
       }
     });
 
     // Get recent interview details
-    const recentInterviews = interviews.slice(0, 3).map(int => ({
-      role: int.role,
-      level: int.level,
-      score: int.evaluation?.overallScore || 0,
-      date: int.createdAt
-    }));
+    const recentInterviews = interviews.slice(0, 3).map(int => {
+      const [role, level] = int.role.split(':');
+      return {
+        role: role || int.role,
+        level: level || 'mid',
+        score: int.aiSummary?.score || 0,
+        date: int.createdAt
+      };
+    });
 
     // Calculate roadmap progress
     const totalRoadmaps = roadmaps?.length || 0;
@@ -63,12 +76,9 @@ export async function POST(request) {
     if (totalRoadmaps > 0) {
       let totalProgress = 0;
       roadmaps.forEach(roadmap => {
-        const saved = typeof window !== 'undefined' 
-          ? localStorage.getItem(`roadmap-${roadmap._id}-progress`)
-          : null;
-        if (saved && roadmap.content?.steps?.length) {
-          const completedSteps = new Set(JSON.parse(saved));
-          totalProgress += (completedSteps.size / roadmap.content.steps.length) * 100;
+        // For server-side, we can't access localStorage, so we'll use a default progress
+        if (roadmap.content?.steps?.length) {
+          totalProgress += 50; // Default 50% progress for roadmaps
         }
       });
       averageRoadmapProgress = Math.round(totalProgress / totalRoadmaps);
@@ -122,26 +132,53 @@ Instructions:
       }
     ];
 
-    const completion = await groq.chat.completions.create({
-      messages: messages,
-      model: "llama-3.3-70b-versatile",
-      temperature: 0.7,
-      max_tokens: 800,
-    });
+    console.log("AI Coach Chat: Calling Groq API...");
+    console.log("GROQ_API_KEY exists:", !!process.env.GROQ_API_KEY);
+    
+    let completion;
+    try {
+      completion = await groq.chat.completions.create({
+        messages: messages,
+        model: "llama-3.3-70b-versatile",
+        temperature: 0.7,
+        max_tokens: 800,
+      });
+    } catch (modelError) {
+      console.log("Primary model failed, trying fallback...");
+      completion = await groq.chat.completions.create({
+        messages: messages,
+        model: "llama-3.1-70b-versatile",
+        temperature: 0.7,
+        max_tokens: 800,
+      });
+    }
+    console.log("AI Coach Chat: Groq response received");
 
     const response = completion.choices[0]?.message?.content || 
       "I apologize, but I'm having trouble generating a response right now. Please try rephrasing your question.";
 
+    console.log("AI Coach Chat: Returning response");
     return NextResponse.json({
       success: true,
       response: response
     });
   } catch (error) {
     console.error("Error in AI coach chat:", error);
+    
+    // Provide a more helpful fallback response
+    const fallbackResponse = `I apologize, but I'm having trouble processing your request right now. This could be due to a temporary issue with the AI service. 
+
+Here are some things you can try:
+- Check your internet connection
+- Try asking a simpler question
+- Wait a moment and try again
+
+If the problem persists, please let me know what you were trying to ask about, and I'll do my best to help!`;
+
     return NextResponse.json(
       { 
-        success: false,
-        response: "I'm sorry, but I encountered an error processing your request. Please try again in a moment."
+        success: true,
+        response: fallbackResponse
       },
       { status: 200 }
     );

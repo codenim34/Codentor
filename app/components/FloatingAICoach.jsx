@@ -144,7 +144,7 @@ export default function FloatingAICoach() {
       console.error("Error sending message:", error);
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: "I apologize, but I'm having trouble processing your request right now. Please try again.",
+        content: "I apologize, but I'm having trouble processing your request right now. This could be due to a temporary issue with the AI service. Please try again in a moment, or try asking a simpler question.",
         timestamp: new Date().toISOString()
       }]);
     } finally {
