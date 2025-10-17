@@ -1,5 +1,4 @@
 import { ClerkProvider } from "@clerk/nextjs";
-import { light } from "@clerk/themes";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Kanit } from "next/font/google";
@@ -42,7 +41,30 @@ export default function RootLayout({ children }) {
   return (
     <ClerkProvider
       appearance={{
-        baseTheme: light,
+        baseTheme: undefined,
+        variables: {
+          colorPrimary: "#10b981",
+          colorBackground: "#111827",
+          colorInputBackground: "#1f2937",
+          colorInputText: "#ffffff",
+          colorText: "#ffffff",
+          colorTextSecondary: "#9ca3af",
+          colorDanger: "#ef4444",
+          borderRadius: "0.75rem",
+          fontFamily: "'Kanit', sans-serif",
+        },
+        elements: {
+          card: "bg-gray-900 text-white",
+          headerTitle: "text-white",
+          headerSubtitle: "text-gray-300",
+          socialButtonsBlockButton: "bg-gray-800 border border-emerald-500/30 text-white hover:bg-gray-700",
+          formButtonPrimary: "bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 normal-case",
+          footerActionLink: "text-emerald-400 hover:text-emerald-300",
+          formFieldLabel: "text-gray-300",
+          formFieldInput: "bg-gray-800 border-emerald-900/30 text-white",
+          footer: "bg-gray-900",
+          logoBox: "h-12",
+        },
       }}
       publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY}
     >
