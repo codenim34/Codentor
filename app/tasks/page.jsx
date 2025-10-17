@@ -3,11 +3,14 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 import { FiPlus, FiList, FiCalendar, FiGrid, FiFilter } from "react-icons/fi";
 import TaskForm from "../components/tasks/TaskForm";
 import TaskList from "../components/tasks/TaskList";
 import CalendarView from "../components/tasks/CalendarView";
 import KanbanBoard from "../components/tasks/KanbanBoard";
+import GoogleCalendarSync from "../components/tasks/GoogleCalendarSync";
+import NotificationSettings from "../components/tasks/NotificationSettings";
 
 export default function TasksPage() {
   const { user, isLoaded } = useUser();
@@ -18,6 +21,7 @@ export default function TasksPage() {
   const [editingTask, setEditingTask] = useState(null);
   const [currentView, setCurrentView] = useState('list'); // 'list', 'calendar', 'kanban'
   const [currentFilter, setCurrentFilter] = useState('all'); // 'all', 'today', 'remaining', 'completed'
+  const [showSettings, setShowSettings] = useState(false);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -48,6 +52,26 @@ export default function TasksPage() {
       fetchTasks();
     }
   }, [user, currentFilter]);
+
+  // Check for connection success/error in URL params
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('connected') === 'true') {
+        toast.success('Google Calendar connected successfully!');
+        // Clean up URL
+        window.history.replaceState({}, '', '/tasks');
+      } else if (params.get('error')) {
+        const error = params.get('error');
+        if (error === 'access_denied') {
+          toast.error('Google Calendar access was denied');
+        } else {
+          toast.error('Failed to connect Google Calendar');
+        }
+        window.history.replaceState({}, '', '/tasks');
+      }
+    }
+  }, []);
 
   const handleCreateTask = () => {
     setEditingTask(null);
@@ -205,6 +229,24 @@ export default function TasksPage() {
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Google Calendar Sync */}
+        <GoogleCalendarSync onSyncComplete={handleTaskUpdated} />
+
+        {/* Notification Settings */}
+        {showSettings && (
+          <NotificationSettings />
+        )}
+
+        {/* Settings Toggle */}
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => setShowSettings(!showSettings)}
+            className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-lg font-medium transition-all border border-emerald-500/20"
+          >
+            {showSettings ? 'Hide' : 'Show'} Notification Settings
+          </button>
         </div>
 
         {/* Task View */}
