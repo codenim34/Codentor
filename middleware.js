@@ -53,10 +53,28 @@ export default clerkMiddleware((auth, request) => {
   }
 
   // Clerk middleware handles authentication for non-admin routes automatically
-  // Only landing page, sign-in, sign-up, and webhooks are public
-  // All features (dashboard, learn, codelab, community, challenges, support) require authentication
+  // TEMPORARY: Making routes public for development until Clerk is configured
+  // TODO: Remove these public routes once Clerk env vars are set up
 }, {
-  publicRoutes: ["/", "/sign-in(.*)", "/sign-up(.*)", "/api/webhooks(.*)"]
+  publicRoutes: [
+    "/", 
+    "/sign-in(.*)", 
+    "/sign-up(.*)", 
+    "/api/webhooks(.*)",
+    "/dashboard(.*)",
+    "/learn(.*)",
+    "/codelab(.*)",
+    "/dev-discuss(.*)",
+    "/quests(.*)",
+    "/roadmaps(.*)",
+    "/faq(.*)",
+    "/api/ai-assistant(.*)",
+    "/api/ai-search(.*)",
+    "/api/leaderboard(.*)",
+    "/api/quests(.*)",
+    "/api/questions(.*)",
+    "/api/attempts(.*)"
+  ]
 });
 
 export const config = {

@@ -14,8 +14,7 @@ import {
   Loader2,
   Code,
   User,
-  Bot,
-  Wand2
+  Bot
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -25,7 +24,7 @@ export default function AIAssistant({ code, language, onCodeUpdate }) {
   const [messages, setMessages] = useState([
     {
       role: "assistant",
-      content: "👋 Hi! I'm your AI coding assistant powered by Gemini. I can help you with code, answer questions, and even modify your code directly. Try asking me something!",
+      content: "👋 Hi! I'm your AI Assistant. I can help you with code, answer questions, explain concepts, and show you code examples. What would you like help with?",
       timestamp: new Date(),
     }
   ]);
@@ -33,12 +32,16 @@ export default function AIAssistant({ code, language, onCodeUpdate }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [voiceEnabled, setVoiceEnabled] = useState(false); // Speaker off by default
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   
   const messagesEndRef = useRef(null);
   const recognitionRef = useRef(null);
   const synthesisRef = useRef(null);
   const chatContainerRef = useRef(null);
+  const draggableRef = useRef(null);
 
   // Initialize speech recognition
   useEffect(() => {
@@ -73,6 +76,42 @@ export default function AIAssistant({ code, language, onCodeUpdate }) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Dragging functionality
+  const handleMouseDown = (e) => {
+    if (e.target.closest('.drag-handle')) {
+      setIsDragging(true);
+      setDragStart({
+        x: e.clientX - position.x,
+        y: e.clientY - position.y
+      });
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    if (isDragging) {
+      setPosition({
+        x: e.clientX - dragStart.x,
+        y: e.clientY - dragStart.y
+      });
+    }
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDragging]);
 
   const toggleVoiceRecognition = () => {
     if (!recognitionRef.current) {
@@ -163,53 +202,13 @@ export default function AIAssistant({ code, language, onCodeUpdate }) {
         content: data.message,
         timestamp: new Date(),
         codeChange: data.codeChange,
+        newCode: data.newCode,
       };
 
       setMessages(prev => [...prev, assistantMessage]);
 
-      // If AI suggests code change and agentic mode is enabled
-      if (data.codeChange && data.newCode) {
-        // Show toast with option to apply
-        toast.custom((t) => (
-          <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} max-w-md w-full bg-gray-800 shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5`}>
-            <div className="flex-1 w-0 p-4">
-              <div className="flex items-start">
-                <div className="flex-shrink-0 pt-0.5">
-                  <Wand2 className="h-6 w-6 text-emerald-400" />
-                </div>
-                <div className="ml-3 flex-1">
-                  <p className="text-sm font-medium text-white">
-                    AI wants to update your code
-                  </p>
-                  <p className="mt-1 text-sm text-gray-400">
-                    {data.codeChange}
-                  </p>
-                </div>
-              </div>
-            </div>
-            <div className="flex border-l border-gray-700">
-              <button
-                onClick={() => {
-                  onCodeUpdate(data.newCode);
-                  toast.success('Code updated by AI!');
-                  toast.dismiss(t.id);
-                }}
-                className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-emerald-400 hover:text-emerald-300 focus:outline-none"
-              >
-                Apply
-              </button>
-              <button
-                onClick={() => toast.dismiss(t.id)}
-                className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-gray-400 hover:text-gray-300 focus:outline-none"
-              >
-                Dismiss
-              </button>
-            </div>
-          </div>
-        ), {
-          duration: 10000,
-        });
-      }
+      // Code is now displayed directly in the chat with Apply button
+      // No need for separate toast notification
 
       // Speak the response if voice is enabled
       if (voiceEnabled && data.message) {
@@ -255,10 +254,18 @@ export default function AIAssistant({ code, language, onCodeUpdate }) {
 
   return (
     <div 
+      ref={draggableRef}
+      style={{
+        transform: `translate(${position.x}px, ${position.y}px)`,
+        cursor: isDragging ? 'grabbing' : 'default'
+      }}
       className={`fixed ${isMinimized ? 'bottom-6 right-6 w-80' : 'bottom-6 right-6 w-96 h-[600px]'} bg-gray-800 rounded-2xl shadow-2xl border border-emerald-500/30 flex flex-col z-50 transition-all duration-300`}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-emerald-900/30 bg-gradient-to-r from-emerald-500/20 to-green-500/20 rounded-t-2xl">
+      <div 
+        className="flex items-center justify-between p-4 border-b border-emerald-900/30 bg-gradient-to-r from-emerald-500/20 to-green-500/20 rounded-t-2xl drag-handle cursor-grab active:cursor-grabbing"
+        onMouseDown={handleMouseDown}
+      >
         <div className="flex items-center space-x-2">
           <div className="relative">
             <Sparkles className="w-5 h-5 text-emerald-400" />
@@ -267,8 +274,8 @@ export default function AIAssistant({ code, language, onCodeUpdate }) {
             )}
           </div>
           <span className="font-semibold text-white">AI Assistant</span>
-          <span className="text-xs text-emerald-400 bg-emerald-500/20 px-2 py-0.5 rounded-full">
-            Gemini
+          <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">
+            Ready to Help
           </span>
         </div>
         <div className="flex items-center space-x-2">
@@ -342,10 +349,28 @@ export default function AIAssistant({ code, language, onCodeUpdate }) {
                     <div className="text-sm whitespace-pre-wrap break-words">
                       {message.content}
                     </div>
-                    {message.codeChange && (
-                      <div className="mt-2 text-xs text-emerald-400 flex items-center space-x-1">
-                        <Code className="w-3 h-3" />
-                        <span>Code change suggested</span>
+                    {message.newCode && (
+                      <div className="mt-3 border border-emerald-500/30 rounded-lg overflow-hidden">
+                        <div className="bg-emerald-500/10 px-3 py-1.5 flex items-center justify-between">
+                          <span className="text-xs text-emerald-400 font-semibold flex items-center space-x-1">
+                            <Code className="w-3 h-3" />
+                            <span>Generated Code</span>
+                          </span>
+                          {onCodeUpdate && (
+                            <button
+                              onClick={() => {
+                                onCodeUpdate(message.newCode);
+                                toast.success('Code applied to editor!');
+                              }}
+                              className="text-xs bg-emerald-500 hover:bg-emerald-600 text-white px-2 py-1 rounded transition-colors"
+                            >
+                              Apply to Editor
+                            </button>
+                          )}
+                        </div>
+                        <pre className="bg-gray-900 p-3 text-xs overflow-x-auto">
+                          <code className="text-gray-300">{message.newCode}</code>
+                        </pre>
                       </div>
                     )}
                     <div className="text-xs text-gray-500 mt-1">

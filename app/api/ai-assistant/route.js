@@ -17,35 +17,29 @@ export async function POST(req) {
     // Get the latest user message
     const userMessage = messages[messages.length - 1]?.content || "";
 
-    // Create a context-aware prompt
-    const systemPrompt = `You are an expert coding assistant helping developers write better code. 
-You have access to the user's current code and can provide assistance.
+    const systemPrompt = `You are an AI coding assistant that helps developers with code.
 
-Current Code Context:
+📝 CURRENT CODE CONTEXT:
 Language: ${language}
 Code:
 \`\`\`${language}
-${currentCode}
+${currentCode || "// No code yet"}
 \`\`\`
 
-Guidelines:
-1. Provide clear, concise, and accurate coding help
-2. Focus ONLY on coding-related questions and assistance
-3. If asked about non-coding topics, politely redirect to coding topics
-4. When suggesting code changes, be specific and explain why
-5. You can offer to modify the code directly - if you want to make changes, include a JSON block at the end with this format:
-   {
-     "action": "code_change",
-     "description": "Brief description of the change",
-     "newCode": "The complete modified code"
-   }
-6. Only suggest code changes when explicitly asked or when it's clearly beneficial
-7. Keep responses concise but informative
-8. Use markdown formatting for better readability
+INSTRUCTIONS:
+- Answer questions clearly and helpfully
+- Explain concepts with examples when needed
+- When showing code examples, use markdown code blocks
+- Be conversational and educational
+- If user asks for code changes, provide complete working code
+- Always explain what you're doing
 
-User Question: ${userMessage}`;
+User Request: ${userMessage}
 
-    // Initialize the model with the latest Gemini model
+Remember: Be helpful, clear, and provide complete code examples when relevant.`;
+
+
+    // Initialize the model
     const model = genAI.getGenerativeModel({ 
       model: "gemini-2.5-flash",
       generationConfig: {
@@ -61,23 +55,22 @@ User Question: ${userMessage}`;
     const response = await result.response;
     let text = response.text();
 
-    // Check if AI wants to modify code
-    let codeChange = null;
+    // Extract code from markdown code blocks
     let newCode = null;
+    let codeChange = null;
     
-    // Look for JSON action block
-    const jsonMatch = text.match(/\{[\s\S]*"action":\s*"code_change"[\s\S]*\}/);
-    if (jsonMatch) {
-      try {
-        const actionData = JSON.parse(jsonMatch[0]);
-        if (actionData.action === "code_change" && actionData.newCode) {
-          codeChange = actionData.description || "AI suggested code modification";
-          newCode = actionData.newCode;
-          // Remove the JSON block from the displayed message
-          text = text.replace(jsonMatch[0], '').trim();
-        }
-      } catch (e) {
-        console.error('Error parsing action JSON:', e);
+    // Look for code blocks in the response (```language ... ```)
+    const codeBlockRegex = new RegExp(`\`\`\`(?:${language}|javascript|typescript|python|java|cpp|c|go|rust|php|ruby)?\\s*([\\s\\S]*?)\`\`\``, 'gi');
+    const codeMatches = text.match(codeBlockRegex);
+    
+    if (codeMatches && codeMatches.length > 0) {
+      // Get the last code block (most likely the complete code)
+      const lastCodeBlock = codeMatches[codeMatches.length - 1];
+      // Extract code content
+      newCode = lastCodeBlock.replace(/```[\w]*\s*/, '').replace(/```\s*$/, '').trim();
+      
+      if (newCode) {
+        codeChange = "AI generated code example";
       }
     }
 
