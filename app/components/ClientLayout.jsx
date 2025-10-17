@@ -11,6 +11,11 @@ const TourGuide = dynamic(() => import("@/components/TourGuide"), {
   ssr: false,
 });
 
+// Dynamically import FloatingVoiceAgent with no SSR
+const FloatingVoiceAgent = dynamic(() => import("./FloatingVoiceAgent"), {
+  ssr: false,
+});
+
 export default function ClientLayout({ children }) {
   const pathname = usePathname();
   const [isMounted, setIsMounted] = useState(false);
@@ -61,6 +66,7 @@ export default function ClientLayout({ children }) {
           <div className="w-full">
             {children}
             {isMounted && !isExcludedPath && <TourGuide />}
+            {isMounted && !isExcludedPath && <FloatingVoiceAgent />}
           </div>
         </div>
       </main>

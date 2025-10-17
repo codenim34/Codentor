@@ -17,7 +17,7 @@ import {
   TbLayoutSidebarLeftExpandFilled,
 } from "react-icons/tb";
 import { FiMap, FiHelpCircle } from "react-icons/fi";
-import { Code2, Sparkles, MessageSquare } from "lucide-react";
+import { Code2, Sparkles, MessageSquare, StickyNote, CheckSquare } from "lucide-react";
 
 const Sidebar = ({ isOpen, setIsOpen }) => {
   const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
@@ -180,6 +180,48 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
               )}
               <span className={`transition-all duration-300 ${isOpen ? "opacity-100" : "opacity-0 w-0"}`}>
                 {isOpen && "DevDiscuss"}
+              </span>
+            </Link>
+          </div>
+
+          {/* Productivity Section */}
+          <div className={`${isOpen ? "space-y-2 py-4 border-b border-emerald-800/30" : "space-y-6"}`}>
+            <Link
+              href="/tasks"
+              className={`flex items-center text-gray-300 hover:text-emerald-400 hover:bg-emerald-950/50 rounded-lg ${
+                !isOpen ? "p-1.5 justify-center" : "p-2"
+              } transition-all duration-300 relative group border border-transparent hover:border-emerald-800/30`}
+              title="Tasks"
+            >
+              <CheckSquare className={`transition-all duration-300 min-w-[24px] min-h-[24px] ${isOpen ? "mr-2 text-xl" : "text-2xl"}`} />
+              {!isOpen && (
+                <div className="absolute left-full ml-4 scale-0 group-hover:scale-100 transition-all duration-300 origin-left z-50">
+                  <div className="bg-black border border-emerald-800/50 text-gray-200 px-4 py-2 rounded-lg shadow-[0_4px_20px_rgba(16,185,129,0.3)] font-medium">
+                    Tasks
+                  </div>
+                </div>
+              )}
+              <span className={`transition-all duration-300 ${isOpen ? "opacity-100" : "opacity-0 w-0"}`}>
+                {isOpen && "Tasks"}
+              </span>
+            </Link>
+            <Link
+              href="/notes"
+              className={`flex items-center text-gray-300 hover:text-emerald-400 hover:bg-emerald-950/50 rounded-lg ${
+                !isOpen ? "p-1.5 justify-center" : "p-2"
+              } transition-all duration-300 relative group border border-transparent hover:border-emerald-800/30`}
+              title="Notes"
+            >
+              <StickyNote className={`transition-all duration-300 min-w-[24px] min-h-[24px] ${isOpen ? "mr-2 text-xl" : "text-2xl"}`} />
+              {!isOpen && (
+                <div className="absolute left-full ml-4 scale-0 group-hover:scale-100 transition-all duration-300 origin-left z-50">
+                  <div className="bg-black border border-emerald-800/50 text-gray-200 px-4 py-2 rounded-lg shadow-[0_4px_20px_rgba(16,185,129,0.3)] font-medium">
+                    Notes
+                  </div>
+                </div>
+              )}
+              <span className={`transition-all duration-300 ${isOpen ? "opacity-100" : "opacity-0 w-0"}`}>
+                {isOpen && "Notes"}
               </span>
             </Link>
           </div>
