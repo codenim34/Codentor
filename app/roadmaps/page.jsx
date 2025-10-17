@@ -83,7 +83,7 @@ export default function RoadmapsPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-codeBlack-900 to-deepGreen-950">
-      <div className="sticky top-20 z-40 bg-codeBlack-900/80 border-b border-deepGreen-800/30 backdrop-blur-sm">
+      <div className="sticky top-0 z-40 bg-codeBlack-900/80 border-b border-deepGreen-800/30 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 py-6 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
             <div>

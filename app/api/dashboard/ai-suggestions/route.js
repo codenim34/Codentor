@@ -19,6 +19,10 @@ export async function GET(request) {
       .sort({ createdAt: -1 })
       .limit(5);
 
+    // Fetch task statistics
+    const tasksResponse = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/tasks/stats`);
+    const tasksData = tasksResponse.ok ? await tasksResponse.json() : { total: 0, completed: 0 };
+
     // Build activity context for AI
     const interviewSummary = interviewSessions.map(s => {
       const [role, level] = s.role.split(':');
@@ -44,6 +48,7 @@ export async function GET(request) {
 USER ACTIVITY SUMMARY:
 - Total Interviews Completed: ${interviewSessions.length}
 - Average Interview Score: ${averageScore}/100
+- Task Completion Rate: ${tasksData.total > 0 ? Math.round((tasksData.completed / tasksData.total) * 100) : 0}% (${tasksData.completed}/${tasksData.total} tasks)
 - Top Strengths: ${allStrengths.slice(0, 3).join(', ') || 'Not enough data'}
 - Areas for Improvement: ${allWeaknesses.slice(0, 3).join(', ') || 'Not enough data'}
 

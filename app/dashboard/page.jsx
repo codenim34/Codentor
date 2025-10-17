@@ -32,10 +32,13 @@ export default function Dashboard() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState({
-    activeQuests: 0,
-    completedQuests: 0,
+    totalInterviews: 0,
+    totalRoadmaps: 0,
     roadmapProgress: 0,
-    learningStreak: 0,
+    averageScore: 0,
+    totalTasks: 0,
+    completedTasks: 0,
+    taskCompletionRate: 0,
   });
   const [roadmaps, setRoadmaps] = useState([]);
   const [recentActivity, setRecentActivity] = useState([]);
@@ -57,6 +60,12 @@ export default function Dashboard() {
       if (response.ok) {
         const data = await response.json();
         setInterviewStats(data.stats);
+        // Update main stats with interview data
+        setStats(prev => ({
+          ...prev,
+          totalInterviews: data.stats?.totalInterviews || 0,
+          averageScore: data.stats?.averageScore || 0,
+        }));
       }
     } catch (error) {
       console.error("Error fetching interview stats:", error);
@@ -84,34 +93,26 @@ export default function Dashboard() {
       const userRoadmaps = await getUserRoadmaps(user.id);
       setRoadmaps(userRoadmaps);
 
-      const questsResponse = await fetch('/api/quests/user');
-      const questsData = await questsResponse.json();
+      // Fetch task statistics
+      const tasksResponse = await fetch('/api/tasks/stats');
+      const tasksData = tasksResponse.ok ? await tasksResponse.json() : { total: 0, completed: 0 };
 
-      setStats({
-        activeQuests: questsData?.active?.length || 0,
-        completedQuests: questsData?.completed?.length || 0,
+      setStats(prev => ({
+        ...prev,
+        totalRoadmaps: userRoadmaps?.length || 0,
         roadmapProgress: calculateRoadmapProgress(userRoadmaps),
-        learningStreak: calculateStreak(questsData?.history),
-      });
+        totalTasks: tasksData.total || 0,
+        completedTasks: tasksData.completed || 0,
+        taskCompletionRate: tasksData.total > 0 ? Math.round((tasksData.completed / tasksData.total) * 100) : 0,
+      }));
 
-      const roadmapActivities = userRoadmaps?.slice(0, 2).map(roadmap => ({
+      const roadmapActivities = userRoadmaps?.slice(0, 3).map(roadmap => ({
         title: roadmap.title,
         type: 'Roadmap',
         date: roadmap.createdAt || roadmap.updatedAt || null
       })) || [];
 
-      const allActivities = [
-        ...(questsData?.recent || []),
-        ...roadmapActivities
-      ]
-      .sort((a, b) => {
-        if (!a.date) return 1;
-        if (!b.date) return -1;
-        return new Date(b.date) - new Date(a.date);
-      })
-      .slice(0, 3);
-
-      setRecentActivity(allActivities);
+      setRecentActivity(roadmapActivities);
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
     } finally {
@@ -138,48 +139,6 @@ export default function Dashboard() {
     return validRoadmaps > 0 ? Math.round(totalProgress / validRoadmaps) : 0;
   };
 
-  const calculateStreak = (history) => {
-    if (!history?.length) return 1;
-    
-    const sortedDates = history
-      .map(entry => new Date(entry.date))
-      .sort((a, b) => b - a);
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    const lastActivity = sortedDates[0] ? new Date(sortedDates[0]) : today;
-    lastActivity.setHours(0, 0, 0, 0);
-    
-    if (lastActivity.getTime() === today.getTime()) {
-      return Math.max(1, sortedDates.length);
-    }
-    
-    const timeDiff = today - lastActivity;
-    const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-    
-    if (daysDiff > 1) return 1;
-    
-    let streak = 1;
-    let currentDate = lastActivity;
-    
-    for (let i = 1; i < sortedDates.length; i++) {
-      const nextDate = new Date(sortedDates[i]);
-      nextDate.setHours(0, 0, 0, 0);
-      
-      const diffTime = currentDate - nextDate;
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      
-      if (diffDays === 1) {
-        streak++;
-        currentDate = nextDate;
-      } else {
-        break;
-      }
-    }
-    
-    return Math.max(1, streak);
-  };
 
   const getPriorityColor = (priority) => {
     switch(priority) {
@@ -243,12 +202,12 @@ export default function Dashboard() {
           <Card className="p-6 bg-gray-900/50 border border-emerald-800/30 hover:border-emerald-500/50 hover:shadow-green-glow transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-400">Active Challenges</p>
-                <h3 className="text-2xl font-bold text-white mt-1">{stats.activeQuests}</h3>
-                <p className="text-xs text-gray-500 mt-1">Ongoing challenges</p>
+                <p className="text-sm font-medium text-gray-400">AI Interviews</p>
+                <h3 className="text-2xl font-bold text-white mt-1">{stats.totalInterviews}</h3>
+                <p className="text-xs text-gray-500 mt-1">Completed</p>
               </div>
               <div className="bg-emerald-500/20 p-3 rounded-full">
-                <FaTrophy className="text-2xl text-emerald-400" />
+                <FaBrain className="text-2xl text-emerald-400" />
               </div>
             </div>
           </Card>
@@ -256,12 +215,28 @@ export default function Dashboard() {
           <Card className="p-6 bg-gray-900/50 border border-emerald-800/30 hover:border-emerald-500/50 hover:shadow-green-glow transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-400">Completed Challenges</p>
-                <h3 className="text-2xl font-bold text-white mt-1">{stats.completedQuests}</h3>
-                <p className="text-xs text-gray-500 mt-1">Successfully finished</p>
+                <p className="text-sm font-medium text-gray-400">Interview Score</p>
+                <h3 className="text-2xl font-bold text-white mt-1">{stats.averageScore}%</h3>
+                <p className="text-xs text-gray-500 mt-1">Average performance</p>
               </div>
               <div className="bg-emerald-500/20 p-3 rounded-full">
-                <FaBook className="text-2xl text-emerald-400" />
+                <FaChartLine className="text-2xl text-emerald-400" />
+              </div>
+            </div>
+          </Card>
+
+          <Card 
+            className="p-6 bg-gray-900/50 border border-emerald-800/30 hover:border-emerald-500/50 hover:shadow-green-glow transition-all duration-300 cursor-pointer"
+            onClick={() => router.push('/roadmaps')}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-400">Learning Paths</p>
+                <h3 className="text-2xl font-bold text-white mt-1">{stats.totalRoadmaps}</h3>
+                <p className="text-xs text-gray-500 mt-1">Active roadmaps</p>
+              </div>
+              <div className="bg-emerald-500/20 p-3 rounded-full">
+                <FaRoad className="text-2xl text-emerald-400" />
               </div>
             </div>
           </Card>
@@ -269,35 +244,20 @@ export default function Dashboard() {
           <Card className="p-6 bg-gray-900/50 border border-emerald-800/30 hover:border-emerald-500/50 hover:shadow-green-glow transition-all duration-300">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-400">Learning Path Progress</p>
-                <h3 className="text-2xl font-bold text-white mt-1">{stats.roadmapProgress}%</h3>
-                <p className="text-xs text-gray-500 mt-1">Overall completion</p>
+                <p className="text-sm font-medium text-gray-400">Task Completion</p>
+                <h3 className="text-2xl font-bold text-white mt-1">{stats.taskCompletionRate}%</h3>
+                <p className="text-xs text-gray-500 mt-1">{stats.completedTasks}/{stats.totalTasks} tasks</p>
               </div>
               <div style={{ width: 60, height: 60 }}>
                 <CircularProgressbar
-                  value={stats.roadmapProgress}
-                  text={`${stats.roadmapProgress}%`}
+                  value={stats.taskCompletionRate}
+                  text={`${stats.taskCompletionRate}%`}
                   styles={{
                     path: { stroke: '#10b981', transition: 'stroke-dashoffset 0.5s ease' },
                     text: { fill: '#10b981', fontSize: '24px', fontWeight: 'bold' },
                     trail: { stroke: '#1a1a1a' },
                   }}
                 />
-              </div>
-            </div>
-          </Card>
-
-          <Card className="p-6 bg-gray-900/50 border border-emerald-800/30 hover:border-emerald-500/50 hover:shadow-green-glow transition-all duration-300">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-400">Learning Streak</p>
-                <h3 className="text-2xl font-bold text-white mt-1">
-                  {stats.learningStreak} {stats.learningStreak === 1 ? 'day' : 'days'}
-                </h3>
-                <p className="text-xs text-gray-500 mt-1">Keep it up!</p>
-              </div>
-              <div className="bg-emerald-500/20 p-3 rounded-full">
-                <IoTrendingUp className="text-2xl text-emerald-400" />
               </div>
             </div>
           </Card>
@@ -397,146 +357,65 @@ export default function Dashboard() {
               </Card>
             </div>
 
-            {/* Recent Interviews */}
-            <Card className="bg-gray-900/50 border border-emerald-800/30 p-6">
-              <h3 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-                <TrendingUp className="text-emerald-400" />
-                Recent Interviews
-              </h3>
-              <div className="space-y-3">
-                {interviewStats.recentInterviews.map((interview, index) => (
-                  <div
-                    key={interview.id}
-                    className="p-4 bg-black/30 rounded-lg border border-emerald-800/20 hover:border-emerald-500/40 transition-all"
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                          interview.score >= 80 ? 'bg-green-500/20' :
-                          interview.score >= 60 ? 'bg-yellow-500/20' : 'bg-orange-500/20'
-                        }`}>
-                          <span className={`text-lg font-bold ${
-                            interview.score >= 80 ? 'text-green-400' :
-                            interview.score >= 60 ? 'text-yellow-400' : 'text-orange-400'
-                          }`}>
-                            {interview.score}
-                          </span>
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-white capitalize">
-                            {interview.level} {interview.role}
-                          </h4>
-                          <p className="text-xs text-gray-400">
-                            {new Date(interview.date).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric'
-                            })}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    {interview.strengths.length > 0 && (
-                      <div className="mt-2 text-xs">
-                        <span className="text-emerald-400 font-semibold">Strengths: </span>
-                        <span className="text-gray-300">{interview.strengths.slice(0, 2).join(', ')}</span>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </Card>
           </div>
         )}
 
-        {/* AI Assistant Suggestions */}
+        {/* AI Review Section */}
         {aiSuggestions && (
           <div className="mb-8">
-            <Card className="bg-gradient-to-br from-emerald-900/30 to-gray-900/50 border border-emerald-500/30 p-6 hover:border-emerald-500/50 hover:shadow-green-glow-lg transition-all">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="bg-emerald-500/20 p-3 rounded-full">
-                  <FaBrain className="text-2xl text-emerald-400" />
+            <Card className="bg-gray-900/50 border border-emerald-800/30 p-6 hover:border-emerald-500/50 hover:shadow-green-glow transition-all">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="bg-emerald-500/20 p-2 rounded-full">
+                  <FaBrain className="text-xl text-emerald-400" />
                 </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-                    AI Learning Assistant
-                    <IoSparkles className="text-emerald-400 animate-pulse" />
-                  </h2>
-                  <p className="text-sm text-gray-400">Personalized suggestions based on your activity</p>
-                </div>
+                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                  AI Performance Review
+                  <IoSparkles className="text-emerald-400 animate-pulse" />
+                </h2>
               </div>
 
               {loadingAI ? (
-                <div className="space-y-4">
-                  <div className="h-20 bg-emerald-900/20 rounded-lg animate-pulse"></div>
-                  <div className="h-20 bg-emerald-900/20 rounded-lg animate-pulse"></div>
+                <div className="space-y-3">
+                  <div className="h-16 bg-emerald-900/20 rounded-lg animate-pulse"></div>
+                  <div className="h-16 bg-emerald-900/20 rounded-lg animate-pulse"></div>
                 </div>
               ) : (
-                <>
+                <div className="space-y-4">
                   {aiSuggestions.motivationalMessage && (
-                    <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
-                      <p className="text-emerald-100 italic flex items-center gap-2">
+                    <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
+                      <p className="text-emerald-100 text-sm italic flex items-center gap-2">
                         <FaLightbulb className="text-emerald-400" />
                         {aiSuggestions.motivationalMessage}
                       </p>
                     </div>
                   )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    {aiSuggestions.suggestions?.map((suggestion, index) => (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {aiSuggestions.suggestions?.slice(0, 4).map((suggestion, index) => (
                       <div
                         key={index}
-                        className="p-4 bg-black/30 rounded-lg border border-emerald-800/20 hover:border-emerald-500/40 transition-all"
+                        className="p-3 bg-black/30 rounded-lg border border-emerald-800/20 hover:border-emerald-500/40 transition-all"
                       >
-                        <div className="flex items-start gap-3">
-                          <div className={`mt-1 ${getPriorityColor(suggestion.priority)}`}>
+                        <div className="flex items-start gap-2">
+                          <div className={`mt-0.5 ${getPriorityColor(suggestion.priority)}`}>
                             {getPriorityIcon(suggestion.priority)}
                           </div>
                           <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <h4 className="font-semibold text-white">{suggestion.title}</h4>
-                              <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                suggestion.priority === 'high' ? 'bg-red-500/20 text-red-400' :
-                                suggestion.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-                                'bg-green-500/20 text-green-400'
-                              }`}>
-                                {suggestion.priority}
-                              </span>
-                            </div>
-                            <p className="text-sm text-gray-400">{suggestion.description}</p>
-                            <p className="text-xs text-emerald-400 mt-2 capitalize">
-                              {suggestion.category}
-                            </p>
+                            <h4 className="font-semibold text-white text-sm">{suggestion.title}</h4>
+                            <p className="text-xs text-gray-400 mt-1">{suggestion.description}</p>
                           </div>
                         </div>
                       </div>
                     ))}
                   </div>
-
-                  {aiSuggestions.nextSteps && aiSuggestions.nextSteps.length > 0 && (
-                    <div>
-                      <h3 className="text-lg font-semibold text-white mb-3 flex items-center gap-2">
-                        <Target className="text-emerald-400" />
-                        Your Next Steps
-                      </h3>
-                      <ul className="space-y-2">
-                        {aiSuggestions.nextSteps.map((step, index) => (
-                          <li key={index} className="flex items-start gap-2 text-gray-300">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-400 mt-1 flex-shrink-0" />
-                            <span className="text-sm">{step}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </>
+                </div>
               )}
             </Card>
           </div>
         )}
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card 
             className="p-6 bg-gray-900/50 border border-emerald-800/30 hover:border-emerald-500/50 hover:shadow-green-glow transition-all duration-300 cursor-pointer"
             onClick={() => router.push('/interview')}
@@ -551,6 +430,22 @@ export default function Dashboard() {
                 <FaBrain className="text-2xl text-emerald-400" />
               </div>
             </div>
+          </Card>
+
+          <Card 
+            className="p-6 bg-gray-900/50 border border-emerald-800/30 hover:border-emerald-500/50 hover:shadow-green-glow transition-all duration-300 cursor-pointer"
+            onClick={() => router.push('/ai-coach')}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-400">AI Coach</p>
+                <h3 className="text-xl font-bold text-white mt-1">Get Guidance</h3>
+                <p className="text-xs text-gray-500 mt-1">Personalized advice</p>
+              </div>
+              <div className="bg-emerald-500/20 p-3 rounded-full">
+                <IoSparkles className="text-2xl text-emerald-400" />
+              </div>
+        </div>
           </Card>
 
           <Card 

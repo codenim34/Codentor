@@ -10,7 +10,7 @@ export async function GET(request) {
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     // Fetch all user's interview sessions
-    const sessions = await InterviewSession.find({ userId }).sort({ createdAt: -1 }).limit(10);
+    const sessions = await InterviewSession.find({ userId }).sort({ createdAt: -1 });
 
     // Calculate statistics
     const completedSessions = sessions.filter(s => s.status === 'ended');
@@ -21,6 +21,21 @@ export async function GET(request) {
       : 0;
 
     const recentInterviews = completedSessions.slice(0, 5).map(session => {
+      const [role, level] = session.role.split(':');
+      return {
+        id: session._id,
+        role,
+        level,
+        score: session.aiSummary?.score || 0,
+        date: session.endAt || session.createdAt,
+        strengths: session.aiSummary?.strengths || [],
+        weaknesses: session.aiSummary?.weaknesses || [],
+        recommendations: session.aiSummary?.recommendations || [],
+      };
+    });
+
+    // Get all interviews for history page
+    const allInterviews = completedSessions.map(session => {
       const [role, level] = session.role.split(':');
       return {
         id: session._id,
@@ -58,6 +73,7 @@ export async function GET(request) {
         totalInterviews,
         averageScore,
         recentInterviews,
+        allInterviews,
         scoreRanges,
         topStrengths: allStrengths.slice(0, 5),
         topWeaknesses: allWeaknesses.slice(0, 5),
