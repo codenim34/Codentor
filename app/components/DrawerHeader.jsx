@@ -22,6 +22,7 @@ const DrawerHeader = () => {
 
   const navLinks = [
     { href: "/dashboard", label: "Home", icon: Home },
+    { href: "/feed", label: "Feed", icon: MessageSquare },
     { href: "/learn", label: "Learn Hub", icon: BookOpen },
     { href: "/codelab", label: "Code Lab", icon: Code },
     { href: "/dev-discuss", label: "Community", icon: MessageSquare },

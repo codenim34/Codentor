@@ -1,19 +1,49 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-export default clerkMiddleware((auth, request) => {
-  // Check if the request is for admin routes
-  if (request.nextUrl.pathname.startsWith('/admin') || 
-      request.nextUrl.pathname.startsWith('/api/admin')) {
-    
-    const adminPath = "/admin";
+// Define public routes that don't require authentication
+const isPublicRoute = createRouteMatcher([
+  '/',
+  '/sign-in(.*)',
+  '/sign-up(.*)',
+  '/faq(.*)',
+  '/api/webhooks(.*)',
+]);
+
+// Define protected routes that require authentication
+const isProtectedRoute = createRouteMatcher([
+  '/dashboard(.*)',
+  '/learn(.*)',
+  '/codelab(.*)',
+  '/dev-discuss(.*)',
+  '/quests(.*)',
+  '/roadmaps(.*)',
+  '/api/ai-assistant(.*)',
+  '/api/ai-search(.*)',
+  '/api/leaderboard(.*)',
+  '/api/quests(.*)',
+  '/api/questions(.*)',
+  '/api/attempts(.*)',
+]);
+
+// Define admin routes
+const isAdminRoute = createRouteMatcher([
+  '/admin(.*)',
+  '/api/admin(.*)',
+]);
+
+export default clerkMiddleware(async (auth, request) => {
+  const { userId } = await auth();
+  
+  // Handle admin routes
+  if (isAdminRoute(request)) {
     const loginPath = "/admin/login";
     const authPath = "/api/admin/auth";
 
     // Allow access to login page and auth endpoint
     if (request.nextUrl.pathname === loginPath || 
         request.nextUrl.pathname === authPath) {
-      return;
+      return NextResponse.next();
     }
 
     // Check for admin authentication
@@ -41,42 +71,38 @@ export default clerkMiddleware((auth, request) => {
       return NextResponse.redirect(new URL(loginPath, request.url));
     }
 
-    const [username, password] = Buffer.from(credentials, "base64")
-      .toString()
-      .split(":");
+    try {
+      const [username, password] = Buffer.from(credentials, "base64")
+        .toString()
+        .split(":");
 
-    if (username !== "admin" || password !== "admin123") {
+      if (username !== "admin" || password !== "admin123") {
+        return NextResponse.redirect(new URL(loginPath, request.url));
+      }
+    } catch (error) {
       return NextResponse.redirect(new URL(loginPath, request.url));
     }
 
-    return;
+    return NextResponse.next();
   }
 
-  // Clerk middleware handles authentication for non-admin routes automatically
-  // TEMPORARY: Making routes public for development until Clerk is configured
-  // TODO: Remove these public routes once Clerk env vars are set up
-}, {
-  publicRoutes: [
-    "/", 
-    "/sign-in(.*)", 
-    "/sign-up(.*)", 
-    "/api/webhooks(.*)",
-    "/dashboard(.*)",
-    "/learn(.*)",
-    "/codelab(.*)",
-    "/dev-discuss(.*)",
-    "/quests(.*)",
-    "/roadmaps(.*)",
-    "/faq(.*)",
-    "/api/ai-assistant(.*)",
-    "/api/ai-search(.*)",
-    "/api/leaderboard(.*)",
-    "/api/quests(.*)",
-    "/api/questions(.*)",
-    "/api/attempts(.*)"
-  ]
+  // Protect all routes that are not public
+  if (!isPublicRoute(request)) {
+    if (!userId) {
+      const signInUrl = new URL('/sign-in', request.url);
+      signInUrl.searchParams.set('redirect_url', request.url);
+      return NextResponse.redirect(signInUrl);
+    }
+  }
+
+  return NextResponse.next();
 });
 
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: [
+    // Skip Next.js internals and all static files, unless found in search params
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    // Always run for API routes
+    '/(api|trpc)(.*)',
+  ],
 };

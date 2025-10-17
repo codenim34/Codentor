@@ -12,6 +12,7 @@ import "react-circular-progressbar/dist/styles.css";
 import { getUserRoadmaps } from "@/lib/actions/roadmap";
 import { FaYoutube, FaTrophy, FaRoad, FaBook, FaClock, FaCalendarAlt } from "react-icons/fa";
 import { IoTrendingUp } from "react-icons/io5";
+import { MessageSquare } from "lucide-react";
 
 export default function Dashboard() {
   const { user } = useUser();
@@ -280,6 +281,25 @@ export default function Dashboard() {
               </div>
               <div className="bg-deepGreen-500/20 p-3 rounded-full">
                 <IoTrendingUp className="text-2xl text-deepGreen-400" />
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <Card 
+            className="p-6 bg-codeBlack-900/50 border border-deepGreen-800/30 hover:border-deepGreen-600/50 hover:shadow-green-glow transition-all duration-300 cursor-pointer"
+            onClick={() => router.push('/feed')}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-400">Community Feed</p>
+                <h3 className="text-xl font-bold text-white mt-1">Connect & Share</h3>
+                <p className="text-xs text-gray-500 mt-1">Join the conversation</p>
+              </div>
+              <div className="bg-deepGreen-500/20 p-3 rounded-full">
+                <MessageSquare className="text-2xl text-deepGreen-400" />
               </div>
             </div>
           </Card>

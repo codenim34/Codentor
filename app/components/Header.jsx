@@ -13,6 +13,7 @@ const Header = () => {
 
   const navLinks = [
     { href: "/dashboard", label: "Home" },
+    { href: "/feed", label: "Feed" },
     { href: "/learn", label: "Learn Hub" },
     { href: "/codelab", label: "Code Lab" },
     { href: "/dev-discuss", label: "Community" },
