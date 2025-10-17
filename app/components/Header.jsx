@@ -13,13 +13,12 @@ const Header = () => {
 
   const navLinks = [
     { href: "/dashboard", label: "Home" },
+    { href: "/tasks", label: "Task Manager" },
     { href: "/feed", label: "Feed" },
     { href: "/connections", label: "Connections" },
     { href: "/learn", label: "Learn Hub" },
     { href: "/codelab", label: "Code Lab" },
-    { href: "/dev-discuss", label: "Community" },
-    { href: "/quests", label: "Challenges" },
-    { href: "/faq", label: "Support" },
+    { href: "/quests", label: "Challenges" }
   ];
 
   return (

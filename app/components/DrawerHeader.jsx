@@ -4,16 +4,16 @@ import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { 
-  Menu, 
-  X, 
-  Home, 
-  BookOpen, 
-  Code, 
-  MessageSquare, 
-  Trophy, 
+import {
+  Menu,
+  X,
+  Home,
+  BookOpen,
+  Code,
+  MessageSquare,
+  Trophy,
   HelpCircle,
-  ChevronLeft
+  ChevronLeft,
 } from "lucide-react";
 
 const DrawerHeader = () => {
@@ -21,13 +21,13 @@ const DrawerHeader = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   const navLinks = [
-    { href: "/dashboard", label: "Home", icon: Home },
-    { href: "/feed", label: "Feed", icon: MessageSquare },
-    { href: "/learn", label: "Learn Hub", icon: BookOpen },
-    { href: "/codelab", label: "Code Lab", icon: Code },
-    { href: "/dev-discuss", label: "Community", icon: MessageSquare },
-    { href: "/quests", label: "Challenges", icon: Trophy },
-    { href: "/faq", label: "Support", icon: HelpCircle },
+    { href: "/dashboard", label: "Home" },
+    { href: "/tasks", label: "Task Manager" },
+    { href: "/feed", label: "Feed" },
+    { href: "/connections", label: "Connections" },
+    { href: "/learn", label: "Learn Hub" },
+    { href: "/codelab", label: "Code Lab" },
+    { href: "/quests", label: "Challenges" },
   ];
 
   return (
@@ -43,16 +43,18 @@ const DrawerHeader = () => {
 
       {/* Drawer Overlay */}
       {isDrawerOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
           onClick={() => setIsDrawerOpen(false)}
         />
       )}
 
       {/* Drawer Content */}
-      <div className={`fixed top-0 left-0 h-full w-80 bg-gray-900 border-r border-emerald-500/30 z-50 transform transition-transform duration-300 ${
-        isDrawerOpen ? 'translate-x-0' : '-translate-x-full'
-      }`}>
+      <div
+        className={`fixed top-0 left-0 h-full w-80 bg-gray-900 border-r border-emerald-500/30 z-50 transform transition-transform duration-300 ${
+          isDrawerOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
         {/* Drawer Header */}
         <div className="flex items-center justify-between p-4 border-b border-emerald-500/30">
           <Link href="/" className="flex items-center space-x-2">
