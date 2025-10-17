@@ -5,7 +5,7 @@ import { hasTokens, disconnectCalendar } from '@/lib/utils/googleCalendar';
 // GET - Check if user has connected Google Calendar
 export async function GET() {
   try {
-    const { userId } = auth();
+    const { userId } = await auth();
     
     if (!userId) {
       return NextResponse.json(
@@ -32,7 +32,7 @@ export async function GET() {
 // DELETE - Disconnect Google Calendar
 export async function DELETE() {
   try {
-    const { userId } = auth();
+    const { userId } = await auth();
     
     if (!userId) {
       return NextResponse.json(

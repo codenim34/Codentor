@@ -8,7 +8,7 @@ export async function GET(request) {
   try {
     await connect();
     
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -61,7 +61,7 @@ export async function POST(request) {
   try {
     await connect();
     
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -111,7 +111,7 @@ export async function PATCH(request) {
   try {
     await connect();
     
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -168,7 +168,7 @@ export async function DELETE(request) {
   try {
     await connect();
     
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },

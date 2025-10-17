@@ -2,11 +2,15 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
+import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import { format, parse, startOfWeek, getDay } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { toast } from "react-hot-toast";
 import "react-big-calendar/lib/css/react-big-calendar.css";
+import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import { FiClock, FiEdit2 } from "react-icons/fi";
+
+const DnDCalendar = withDragAndDrop(Calendar);
 
 const locales = {
   'en-US': enUS,
