@@ -66,7 +66,7 @@ export default function ClientLayout({ children }) {
           <div className="w-full">
             {children}
             {isMounted && !isExcludedPath && <TourGuide />}
-            {isMounted && !isExcludedPath && <FloatingVoiceAgent />}
+            {isMounted && !isExcludedPath && !isHomePage && <FloatingVoiceAgent />}
           </div>
         </div>
       </main>

@@ -27,12 +27,13 @@ const DrawerHeader = () => {
 
   const navLinks = [
     { href: "/dashboard", label: "Home", icon: Home },
-    { href: "/tasks", label: "Task Manager", icon: ClipboardList },
+    { href: "/learn", label: "Learn Hub", icon: GraduationCap },
     { href: "/feed", label: "Feed", icon: Rss },
     { href: "/connections", label: "Connections", icon: Users },
-    { href: "/learn", label: "Learn Hub", icon: GraduationCap },
     { href: "/codelab", label: "Code Lab", icon: FlaskConical },
     { href: "/interview", label: "Interviews", icon: Trophy },
+    { href: "/tasks", label: "Task Manager", icon: ClipboardList },
+    { href: "/notes", label: "Notes", icon: BookOpen },
   ];
 
   return (
