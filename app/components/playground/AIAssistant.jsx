@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 
-export default function AIAssistant({ code, language, onCodeUpdate }) {
+export default function AIAssistant({ code, language, onCodeUpdate, isSidebar = false }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState([
@@ -237,6 +237,20 @@ export default function AIAssistant({ code, language, onCodeUpdate }) {
   };
 
   if (!isOpen) {
+    if (isSidebar) {
+      return (
+        <div className="h-full flex items-center justify-center">
+          <button
+            onClick={() => setIsOpen(true)}
+            className="flex flex-col items-center space-y-2 p-6 text-gray-400 hover:text-emerald-400 transition-colors"
+          >
+            <Sparkles className="w-8 h-8" />
+            <span className="text-sm">Open AI Assistant</span>
+          </button>
+        </div>
+      );
+    }
+    
     return (
       <button
         onClick={() => setIsOpen(true)}
@@ -249,6 +263,181 @@ export default function AIAssistant({ code, language, onCodeUpdate }) {
           <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
         </span>
       </button>
+    );
+  }
+
+  if (isSidebar) {
+    return (
+      <div className="h-full flex flex-col bg-gray-800">
+        {/* Header */}
+        <div className="flex items-center justify-between p-3 border-b border-emerald-900/30">
+          <div className="flex items-center space-x-2">
+            <div className="relative">
+              <Sparkles className="w-4 h-4 text-emerald-400" />
+              {isLoading && (
+                <Loader2 className="w-3 h-3 text-emerald-400 absolute -top-1 -right-1 animate-spin" />
+              )}
+            </div>
+            <span className="font-semibold text-white text-sm">AI Assistant</span>
+            <span className="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">
+              Ready to Help
+            </span>
+          </div>
+          <div className="flex items-center space-x-1">
+            <button
+              onClick={() => setVoiceEnabled(!voiceEnabled)}
+              className="p-1.5 hover:bg-gray-700 rounded-lg transition-colors"
+              title={voiceEnabled ? "Disable voice" : "Enable voice"}
+            >
+              {voiceEnabled ? (
+                <Volume2 className="w-3 h-3 text-emerald-400" />
+              ) : (
+                <VolumeX className="w-3 h-3 text-gray-500" />
+              )}
+            </button>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-1.5 hover:bg-gray-700 rounded-lg transition-colors"
+            >
+              <X className="w-3 h-3 text-gray-400" />
+            </button>
+          </div>
+        </div>
+
+        {/* Messages */}
+        <div 
+          ref={chatContainerRef}
+          className="flex-1 overflow-y-auto p-3 space-y-3 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800"
+        >
+          {messages.map((message, index) => (
+            <div
+              key={index}
+              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'} animate-fadeIn`}
+            >
+              <div
+                className={`flex items-start space-x-2 max-w-[85%] ${
+                  message.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''
+                }`}
+              >
+                <div
+                  className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center ${
+                    message.role === 'user'
+                      ? 'bg-blue-500/20 text-blue-400'
+                      : 'bg-emerald-500/20 text-emerald-400'
+                  }`}
+                >
+                  {message.role === 'user' ? (
+                    <User className="w-3 h-3" />
+                  ) : (
+                    <Bot className="w-3 h-3" />
+                  )}
+                </div>
+                <div
+                  className={`rounded-lg px-3 py-2 ${
+                    message.role === 'user'
+                      ? 'bg-blue-500/20 text-white'
+                      : 'bg-gray-700 text-gray-100'
+                  }`}
+                >
+                  <div className="text-xs whitespace-pre-wrap break-words">
+                    {message.content}
+                  </div>
+                  {message.newCode && (
+                    <div className="mt-2 border border-emerald-500/30 rounded-lg overflow-hidden">
+                      <div className="bg-emerald-500/10 px-2 py-1 flex items-center justify-between">
+                        <span className="text-xs text-emerald-400 font-semibold flex items-center space-x-1">
+                          <Code className="w-3 h-3" />
+                          <span>Generated Code</span>
+                        </span>
+                        {onCodeUpdate && (
+                          <button
+                            onClick={() => {
+                              onCodeUpdate(message.newCode);
+                              toast.success('Code applied to editor!');
+                            }}
+                            className="text-xs bg-emerald-500 hover:bg-emerald-600 text-white px-2 py-1 rounded transition-colors"
+                          >
+                            Apply
+                          </button>
+                        )}
+                      </div>
+                      <pre className="bg-gray-900 p-2 text-xs overflow-x-auto">
+                        <code className="text-gray-300">{message.newCode}</code>
+                      </pre>
+                    </div>
+                  )}
+                  <div className="text-xs text-gray-500 mt-1">
+                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+          {isLoading && (
+            <div className="flex justify-start">
+              <div className="bg-gray-700 rounded-lg px-3 py-2">
+                <div className="flex space-x-1">
+                  <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                  <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                  <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                </div>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
+        </div>
+
+        {/* Input */}
+        <div className="p-3 border-t border-emerald-900/30 bg-gray-900/50">
+          <div className="flex items-end space-x-2">
+            <div className="flex-1 relative">
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Ask me anything about your code..."
+                rows={1}
+                className="w-full bg-gray-700 text-white rounded-lg px-3 py-2 pr-10 resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500/50 placeholder-gray-500 text-xs max-h-24"
+                style={{ minHeight: '32px' }}
+              />
+              <button
+                onClick={toggleVoiceRecognition}
+                className={`absolute right-2 bottom-2 p-1 rounded transition-colors ${
+                  isListening 
+                    ? 'bg-red-500 text-white animate-pulse' 
+                    : 'hover:bg-gray-600 text-gray-400'
+                }`}
+                title={isListening ? "Stop listening" : "Voice input"}
+              >
+                {isListening ? <MicOff className="w-3 h-3" /> : <Mic className="w-3 h-3" />}
+              </button>
+            </div>
+            <button
+              onClick={handleSendMessage}
+              disabled={!input.trim() || isLoading}
+              className="bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 disabled:from-gray-600 disabled:to-gray-700 text-white p-2 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Send className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+          <div className="mt-1 text-xs text-gray-500 flex items-center justify-between">
+            <span>Press Enter to send</span>
+            {isSpeaking && (
+              <button
+                onClick={stopSpeaking}
+                className="text-emerald-400 hover:text-emerald-300 flex items-center space-x-1"
+              >
+                <VolumeX className="w-3 h-3" />
+                <span>Stop</span>
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
     );
   }
 

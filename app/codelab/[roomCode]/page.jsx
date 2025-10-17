@@ -46,6 +46,7 @@ export default function CodeLabSession() {
   const [isRunning, setIsRunning] = useState(false);
   const [isError, setIsError] = useState(false);
   const [showOutput, setShowOutput] = useState(false);
+  const [showAISidebar, setShowAISidebar] = useState(true);
   const [executionTime, setExecutionTime] = useState(null);
   const [participants, setParticipants] = useState([]);
   const [lastUpdateFromServer, setLastUpdateFromServer] = useState(null);
@@ -422,12 +423,6 @@ export default function CodeLabSession() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-900">
-      {/* AI Assistant */}
-      <AIAssistant 
-        code={code} 
-        language={language} 
-        onCodeUpdate={handleAICodeUpdate}
-      />
 
       {/* Header */}
       <header className="bg-gray-800 border-b border-emerald-900/30 px-6 py-1">
@@ -451,10 +446,18 @@ export default function CodeLabSession() {
           </div>
 
           <div className="flex items-center space-x-4">
-           
-
-            
-        
+            {/* AI Assistant Toggle */}
+            <button
+              onClick={() => setShowAISidebar(!showAISidebar)}
+              className={`p-2 rounded-lg transition-colors ${
+                showAISidebar 
+                  ? "bg-emerald-500/20 text-emerald-400" 
+                  : "bg-gray-700 hover:bg-gray-600 text-gray-300"
+              }`}
+              title={showAISidebar ? "Hide AI Assistant" : "Show AI Assistant"}
+            >
+              <Sparkles className="w-4 h-4" />
+            </button>
 
             {/* Language Selector */}
             <select
@@ -519,6 +522,35 @@ export default function CodeLabSession() {
 
       {/* Main Content */}
       <div className="flex-1 flex overflow-hidden">
+        {/* AI Assistant Sidebar */}
+        {showAISidebar && (
+          <div className="w-80 bg-gray-800 border-r border-emerald-900/30 flex flex-col">
+            {/* AI Assistant Header */}
+            <div className="flex items-center justify-between px-4 py-3 border-b border-emerald-900/30">
+              <div className="flex items-center space-x-2">
+                <Sparkles className="w-4 h-4 text-emerald-400" />
+                <h3 className="text-white font-medium">AI Assistant</h3>
+              </div>
+              <button
+                onClick={() => setShowAISidebar(false)}
+                className="p-1 hover:bg-gray-700 rounded transition-colors"
+              >
+                <X className="w-4 h-4 text-gray-400" />
+              </button>
+            </div>
+
+            {/* AI Assistant Content */}
+            <div className="flex-1 overflow-hidden">
+              <AIAssistant 
+                code={code} 
+                language={language} 
+                onCodeUpdate={handleAICodeUpdate}
+                isSidebar={true}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Editor */}
         <div className="flex-1 relative">
           <Editor
@@ -559,14 +591,14 @@ export default function CodeLabSession() {
           </div>
         </div>
 
-        {/* Output Panel */}
+        {/* Output Panel - Bottom Terminal */}
         {showOutput && (
-          <div className="w-96 bg-gray-800 border-l border-emerald-900/30 flex flex-col">
+          <div className="absolute bottom-0 left-0 right-0 h-64 bg-gray-800 border-t border-emerald-900/30 flex flex-col z-10">
             {/* Output Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-emerald-900/30">
+            <div className="flex items-center justify-between px-4 py-2 border-b border-emerald-900/30">
               <div className="flex items-center space-x-2">
                 <Terminal className="w-4 h-4 text-gray-400" />
-                <h3 className="text-white font-medium">Output</h3>
+                <h3 className="text-white font-medium text-sm">Terminal</h3>
                 {executionTime && (
                   <span className="text-xs text-gray-500">
                     ({executionTime}ms)
@@ -582,7 +614,7 @@ export default function CodeLabSession() {
             </div>
 
             {/* Output Content */}
-            <div className="flex-1 overflow-auto p-4 font-mono text-sm">
+            <div className="flex-1 overflow-auto p-3 font-mono text-xs">
               {isRunning ? (
                 <div className="flex items-center space-x-2 text-blue-400">
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -600,7 +632,7 @@ export default function CodeLabSession() {
             </div>
 
             {/* Output Footer */}
-            <div className="px-4 py-2 border-t border-emerald-900/30 bg-gray-900/50">
+            <div className="px-3 py-1 border-t border-emerald-900/30 bg-gray-900/50">
               <div className="flex items-center space-x-2 text-xs">
                 {isError ? (
                   <>
