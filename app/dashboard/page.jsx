@@ -363,7 +363,7 @@ export default function Dashboard() {
 
 
         {/* Quick Actions */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <Card 
             className="p-6 bg-gray-900/50 border border-emerald-800/30 hover:border-emerald-500/50 hover:shadow-green-glow transition-all duration-300 cursor-pointer"
             onClick={() => router.push('/interview')}
@@ -380,21 +380,6 @@ export default function Dashboard() {
             </div>
           </Card>
 
-          <Card 
-            className="p-6 bg-gray-900/50 border border-emerald-800/30 hover:border-emerald-500/50 hover:shadow-green-glow transition-all duration-300 cursor-pointer"
-            onClick={() => router.push('/ai-coach')}
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-400">AI Coach</p>
-                <h3 className="text-xl font-bold text-white mt-1">Get Guidance</h3>
-                <p className="text-xs text-gray-500 mt-1">Personalized advice</p>
-              </div>
-              <div className="bg-emerald-500/20 p-3 rounded-full">
-                <IoSparkles className="text-2xl text-emerald-400" />
-              </div>
-        </div>
-          </Card>
 
           <Card 
             className="p-6 bg-gray-900/50 border border-emerald-800/30 hover:border-emerald-500/50 hover:shadow-green-glow transition-all duration-300 cursor-pointer"

@@ -184,7 +184,7 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
             </Link>
           </div>
 
-          {/* AI & Interview Section */}
+          {/* Interview Section */}
           <div className={`${isOpen ? "space-y-2 py-4 border-b border-emerald-800/30" : "space-y-6"}`}>
             <Link
               href="/interview"
@@ -203,25 +203,6 @@ const Sidebar = ({ isOpen, setIsOpen }) => {
               )}
               <span className={`transition-all duration-300 ${isOpen ? "opacity-100" : "opacity-0 w-0"}`}>
                 {isOpen && "AI Interview"}
-              </span>
-            </Link>
-            <Link
-              href="/ai-coach"
-              className={`flex items-center text-gray-300 hover:text-emerald-400 hover:bg-emerald-950/50 rounded-lg ${
-                !isOpen ? "p-1.5 justify-center" : "p-2"
-              } transition-all duration-300 relative group border border-transparent hover:border-emerald-800/30`}
-              title="AI Coach"
-            >
-              <Sparkles className={`transition-all duration-300 min-w-[24px] min-h-[24px] ${isOpen ? "mr-2 text-xl" : "text-2xl"}`} />
-              {!isOpen && (
-                <div className="absolute left-full ml-4 scale-0 group-hover:scale-100 transition-all duration-300 origin-left z-50">
-                  <div className="bg-black border border-emerald-800/50 text-gray-200 px-4 py-2 rounded-lg shadow-[0_4px_20px_rgba(16,185,129,0.3)] font-medium">
-                    AI Coach
-                  </div>
-                </div>
-              )}
-              <span className={`transition-all duration-300 ${isOpen ? "opacity-100" : "opacity-0 w-0"}`}>
-                {isOpen && "AI Coach"}
               </span>
             </Link>
           </div>
