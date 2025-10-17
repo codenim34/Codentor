@@ -17,7 +17,7 @@ export async function POST(request) {
       );
     }
 
-    const { content, media, tags, visibility } = await request.json();
+    const { content, media, tags, visibility, codeSnippet } = await request.json();
 
     if (!content || content.trim().length === 0) {
       return NextResponse.json(
@@ -26,11 +26,21 @@ export async function POST(request) {
       );
     }
 
+    // Extract hashtags from content
+    const hashtagRegex = /#(\w+)/g;
+    const hashtags = [];
+    let match;
+    while ((match = hashtagRegex.exec(content)) !== null) {
+      hashtags.push(match[1].toLowerCase());
+    }
+
     const post = new Post({
       authorId: userId,
       content,
+      codeSnippet: codeSnippet || null,
       media: media || [],
       tags: tags || [],
+      hashtags: hashtags,
       visibility: visibility || 'public'
     });
 
