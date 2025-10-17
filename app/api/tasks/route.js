@@ -146,6 +146,14 @@ export async function PATCH(request) {
       }
     });
 
+    // If dueDate changed, reset reminder flags so future reminders fire again
+    if (updates.dueDate) {
+      task.reminder24hSent = false;
+      task.reminder1hSent = false;
+      task.reminder5mSent = false;
+      task.reminderSent = false;
+    }
+
     await task.save();
 
     return NextResponse.json({

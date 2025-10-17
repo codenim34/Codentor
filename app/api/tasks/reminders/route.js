@@ -15,73 +15,58 @@ export async function GET() {
     await connect();
 
     const now = new Date();
-    const oneDayFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-    const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
 
-    // Find tasks that need reminders (not completed and not already reminded)
-    const tasksDueSoon = await Task.find({
+    // fetch upcoming tasks with any pending reminder
+    const tasks = await Task.find({
       status: { $ne: 'completed' },
-      reminderSent: false,
-      dueDate: {
-        $gte: now,
-        $lte: oneDayFromNow,
-      },
+      dueDate: { $gte: now },
+      $or: [
+        { reminder24hSent: false },
+        { reminder1hSent: false },
+        { reminder5mSent: false },
+      ],
     });
 
-    let remindersSent = 0;
+    let sent24h = 0, sent1h = 0, sent5m = 0;
 
-    for (const task of tasksDueSoon) {
-      // Get user details
-      const user = await User.findOne({ clerkId: task.userId });
-      if (!user) continue;
+    for (const task of tasks) {
+      const msUntilDue = new Date(task.dueDate) - now;
+      const minutesUntilDue = Math.floor(msUntilDue / (60 * 1000));
 
-      // Determine reminder type
-      const timeUntilDue = new Date(task.dueDate) - now;
-      const reminderType = timeUntilDue <= 60 * 60 * 1000 ? 'due_soon' : 'reminder';
-
-      // Send email notification
-      await sendTaskReminderEmail(
-        user.email,
-        user.firstName,
-        task,
-        reminderType
-      );
-
-      // Send in-app notification (Pusher)
-      const notification = await Notification.create({
-        userId: task.userId,
-        type: reminderType === 'due_soon' ? 'task_due_soon' : 'task_reminder',
-        actorId: task.userId, // Self notification
-        taskId: task._id,
-      });
-
-      await pusher.trigger(`user-${task.userId}`, 'notification', {
-        notification: {
-          ...notification.toObject(),
-          task: {
-            title: task.title,
-            dueDate: task.dueDate,
-          },
-        },
-      });
-
-      // Send push notification
-      const subscriptions = await PushSubscription.find({ userId: task.userId });
-      for (const sub of subscriptions) {
-        await sendTaskReminderPush(sub.subscription, task, reminderType);
+      // 5-minute window: 0..5
+      if (!task.reminder5mSent && minutesUntilDue >= 0 && minutesUntilDue <= 5) {
+        await sendReminderFor(task, '5m');
+        task.reminder5mSent = true;
+        await task.save();
+        sent5m++;
+        continue;
       }
 
-      // Mark reminder as sent
-      task.reminderSent = true;
-      await task.save();
+      // 1-hour window: 6..60
+      if (!task.reminder1hSent && minutesUntilDue > 5 && minutesUntilDue <= 60) {
+        await sendReminderFor(task, '1h');
+        task.reminder1hSent = true;
+        await task.save();
+        sent1h++;
+        continue;
+      }
 
-      remindersSent++;
+      // 24-hour window: 61..1440
+      if (!task.reminder24hSent && minutesUntilDue > 60 && minutesUntilDue <= 1440) {
+        await sendReminderFor(task, '24h');
+        task.reminder24hSent = true;
+        await task.save();
+        sent24h++;
+        continue;
+      }
     }
 
     return NextResponse.json({
       success: true,
-      message: `Sent ${remindersSent} reminders`,
-      remindersSent,
+      sent24h,
+      sent1h,
+      sent5m,
+      message: `Sent 24h:${sent24h}, 1h:${sent1h}, 5m:${sent5m}`,
     });
 
   } catch (error) {
@@ -90,6 +75,38 @@ export async function GET() {
       { error: 'Failed to send reminders' },
       { status: 500 }
     );
+  }
+}
+
+async function sendReminderFor(task, windowType) {
+  const user = await User.findOne({ clerkId: task.userId });
+  if (!user) return;
+
+  const reminderType = windowType === '24h' ? 'reminder' : 'due_soon';
+
+  // email
+  await sendTaskReminderEmail(user.email, user.firstName, task, reminderType);
+
+  // in-app notification
+  const notification = await Notification.create({
+    userId: task.userId,
+    type: reminderType === 'reminder' ? 'task_reminder' : 'task_due_soon',
+    actorId: task.userId,
+    taskId: task._id,
+  });
+
+  await pusher.trigger(`user-${task.userId}`, 'notification', {
+    notification: {
+      ...notification.toObject(),
+      task: { title: task.title, dueDate: task.dueDate },
+      windowType,
+    },
+  });
+
+  // push notifications
+  const subscriptions = await PushSubscription.find({ userId: task.userId });
+  for (const sub of subscriptions) {
+    await sendTaskReminderPush(sub.subscription, task, reminderType);
   }
 }
 
