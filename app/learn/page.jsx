@@ -368,11 +368,20 @@ const LearnPage = () => {
         {/* Page Header and Filter Pills in One Section */}
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-            <div>
+            <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-green-500 bg-clip-text text-transparent">
                 Learn & Explore
               </h1>
-              <p className="text-gray-400 text-xs mt-1">Curated tutorials from top educators</p>
+              {/* Square AI Assistant Button next to title */}
+              <button
+                onClick={() => setShowAIAssistant(true)}
+                className="hidden sm:inline-flex items-center justify-center w-9 h-9 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white shadow hover:shadow-emerald-500/30 transition-all"
+                title="Open AI Assistant"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </button>
             </div>
 
             {/* Video Count */}
@@ -514,19 +523,7 @@ const LearnPage = () => {
         </div>
       </main>
 
-      {/* Floating AI Assistant Button */}
-      <button
-        onClick={() => setShowAIAssistant(true)}
-        className="fixed bottom-8 right-8 z-50 bg-gradient-to-r from-emerald-600 to-green-600 text-white p-4 rounded-full shadow-2xl hover:shadow-emerald-500/50 hover:scale-110 transition-all duration-300 group"
-        title="AI Assistant"
-      >
-        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-        </svg>
-        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
-          AI
-        </span>
-      </button>
+      {/* Removed floating AI button; replaced by square button next to title */}
 
       {/* AI Assistant Modal */}
       {showAIAssistant && (
