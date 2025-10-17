@@ -26,6 +26,7 @@ import {
 } from "react-icons/fa";
 import { IoTrendingUp, IoSparkles } from "react-icons/io5";
 import { MessageSquare, Target, Award, TrendingUp, AlertCircle, CheckCircle2, Zap } from "lucide-react";
+import FloatingAICoach from "@/app/components/FloatingAICoach";
 
 export default function Dashboard() {
   const { user } = useUser();
@@ -360,59 +361,6 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* AI Review Section */}
-        {aiSuggestions && (
-          <div className="mb-8">
-            <Card className="bg-gray-900/50 border border-emerald-800/30 p-6 hover:border-emerald-500/50 hover:shadow-green-glow transition-all">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="bg-emerald-500/20 p-2 rounded-full">
-                  <FaBrain className="text-xl text-emerald-400" />
-                </div>
-                <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                  AI Performance Review
-                  <IoSparkles className="text-emerald-400 animate-pulse" />
-                </h2>
-              </div>
-
-              {loadingAI ? (
-                <div className="space-y-3">
-                  <div className="h-16 bg-emerald-900/20 rounded-lg animate-pulse"></div>
-                  <div className="h-16 bg-emerald-900/20 rounded-lg animate-pulse"></div>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {aiSuggestions.motivationalMessage && (
-                    <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">
-                      <p className="text-emerald-100 text-sm italic flex items-center gap-2">
-                        <FaLightbulb className="text-emerald-400" />
-                        {aiSuggestions.motivationalMessage}
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {aiSuggestions.suggestions?.slice(0, 4).map((suggestion, index) => (
-                      <div
-                        key={index}
-                        className="p-3 bg-black/30 rounded-lg border border-emerald-800/20 hover:border-emerald-500/40 transition-all"
-                      >
-                        <div className="flex items-start gap-2">
-                          <div className={`mt-0.5 ${getPriorityColor(suggestion.priority)}`}>
-                            {getPriorityIcon(suggestion.priority)}
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="font-semibold text-white text-sm">{suggestion.title}</h4>
-                            <p className="text-xs text-gray-400 mt-1">{suggestion.description}</p>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </Card>
-          </div>
-        )}
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -564,6 +512,9 @@ export default function Dashboard() {
           </Card>
         </div>
       </div>
+
+      {/* Floating AI Coach */}
+      <FloatingAICoach />
     </div>
   );
 }
