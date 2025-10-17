@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { Send, Image, Video, X, Loader2, Code2, ChevronDown } from "lucide-react";
+import { Send, Image, X, Loader2, Code2, ChevronDown } from "lucide-react";
 import toast from "react-hot-toast";
 
 const LANGUAGES = [
@@ -73,8 +73,8 @@ export default function PostComposer({ onPostCreated }) {
   };
 
   const handlePost = async () =>  {
-    if (!content.trim() && media.length === 0 && !codeSnippet.code) {
-      toast.error('Please add some content, media, or code');
+    if (!content.trim() && media.length === 0) {
+      toast.error('Please add some content or media');
       return;
     }
 
@@ -88,8 +88,12 @@ export default function PostComposer({ onPostCreated }) {
       };
 
       // Add code snippet if present
-      if (codeSnippet.code) {
-        postData.codeSnippet = codeSnippet;
+      if (codeSnippet.code.trim()) {
+        postData.codeSnippet = {
+          code: codeSnippet.code.trim(),
+          language: codeSnippet.language,
+          title: codeSnippet.title.trim()
+        };
       }
 
       const response = await fetch('/api/feed/posts', {
@@ -124,6 +128,7 @@ export default function PostComposer({ onPostCreated }) {
       setVisibility("public");
       setCodeSnippet({ code: "", language: "javascript", title: "" });
       setShowCodeEditor(false);
+      toast.success('Post created successfully!');
     } catch (error) {
       console.error('Error creating post:', error);
       toast.error('Failed to create post');
@@ -158,17 +163,11 @@ export default function PostComposer({ onPostCreated }) {
         <div className="mt-4 grid grid-cols-2 gap-4">
           {media.map((item, index) => (
             <div key={index} className="relative group">
-              {item.type === 'image' ? (
-                <img
-                  src={item.url}
-                  alt="Upload"
-                  className="w-full h-32 object-cover rounded-lg border border-emerald-900/30"
-                />
-              ) : (
-                <div className="w-full h-32 bg-gray-900/50 border border-emerald-900/30 rounded-lg flex items-center justify-center">
-                  <Video className="w-8 h-8 text-emerald-400" />
-                </div>
-              )}
+              <img
+                src={item.url}
+                alt="Upload"
+                className="w-full h-32 object-cover rounded-lg border border-emerald-900/30"
+              />
               <button
                 onClick={() => removeMedia(index)}
                 className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
@@ -239,18 +238,6 @@ export default function PostComposer({ onPostCreated }) {
             <Image className="w-5 h-5 text-emerald-400" />
           </label>
 
-          {/* Video Upload */}
-          <label className="cursor-pointer p-2 hover:bg-emerald-500/10 rounded-lg transition-colors" title="Add video">
-            <input
-              type="file"
-              accept="video/*"
-              className="hidden"
-              onChange={(e) => handleFileUpload(e, 'video')}
-              disabled={isUploading || isPosting}
-            />
-            <Video className="w-5 h-5 text-emerald-400" />
-          </label>
-
           {/* Code Snippet */}
           <button
             onClick={() => setShowCodeEditor(!showCodeEditor)}
@@ -276,7 +263,7 @@ export default function PostComposer({ onPostCreated }) {
         {/* Post Button */}
         <button
           onClick={handlePost}
-          disabled={(!content.trim() && media.length === 0 && !codeSnippet.code) || isPosting || isUploading}
+          disabled={(!content.trim() && media.length === 0) || isPosting || isUploading}
           className="flex items-center space-x-2 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 disabled:from-gray-600 disabled:to-gray-700 text-white px-6 py-2 rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isPosting ? (

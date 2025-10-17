@@ -5,7 +5,7 @@ import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import PostComposer from "../components/feed/PostComposer";
 import PostCard from "../components/feed/PostCard";
-import { Loader2, Filter, UserPlus } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 
 export default function FeedPage() {
@@ -15,10 +15,10 @@ export default function FeedPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [filter, setFilter] = useState("all"); // 'all' or 'connections'
+  const [activeTab, setActiveTab] = useState("all"); // 'all', 'my-posts', or 'connections'
+  const [connections, setConnections] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
   const observerTarget = useRef(null);
-  const [people, setPeople] = useState([]);
-  const [loadingPeople, setLoadingPeople] = useState(true);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -27,10 +27,16 @@ export default function FeedPage() {
     }
   }, [isLoaded, user, router]);
 
-  const fetchPosts = useCallback(async (pageNum = 1, currentFilter = filter) => {
+  const fetchPosts = useCallback(async (pageNum = 1, currentTab = activeTab) => {
+    if (currentTab === 'connections') {
+      // Don't fetch posts for connections tab
+      return;
+    }
+
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/feed/posts?page=${pageNum}&limit=10&filter=${currentFilter}`);
+      const filterParam = currentTab === 'my-posts' ? 'my-posts' : 'all';
+      const response = await fetch(`/api/feed/posts?page=${pageNum}&limit=10&filter=${filterParam}`);
       
       if (response.status === 401) {
         // Unauthorized - redirect to sign-in
@@ -58,14 +64,18 @@ export default function FeedPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [filter, router]);
+  }, [activeTab, router]);
 
   useEffect(() => {
     if (user) {
-      fetchPosts(1, filter);
-      fetchPeople();
+      if (activeTab === 'connections') {
+        fetchConnections();
+      } else {
+        setPage(1);
+        fetchPosts(1, activeTab);
+      }
     }
-  }, [user, filter, fetchPosts]);
+  }, [user, activeTab, fetchPosts]);
 
   // Infinite scroll
   useEffect(() => {
@@ -90,10 +100,71 @@ export default function FeedPage() {
   }, [hasMore, isLoading]);
 
   useEffect(() => {
-    if (page > 1) {
-      fetchPosts(page, filter);
+    if (page > 1 && activeTab !== 'connections') {
+      fetchPosts(page, activeTab);
     }
-  }, [page, filter, fetchPosts]);
+  }, [page, activeTab, fetchPosts]);
+
+  const fetchConnections = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Fetch accepted connections
+      const connectionsRes = await fetch('/api/connections/my');
+      if (connectionsRes.ok) {
+        const connectionsData = await connectionsRes.json();
+        setConnections(connectionsData.connections || []);
+      }
+      
+      // Fetch pending requests
+      const pendingRes = await fetch('/api/connections/pending');
+      if (pendingRes.ok) {
+        const pendingData = await pendingRes.json();
+        setPendingRequests(pendingData.requests || []);
+      }
+    } catch (error) {
+      console.error('Error fetching connections:', error);
+      toast.error('Failed to load connections');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAcceptConnection = async (requestId) => {
+    try {
+      const response = await fetch(`/api/connections/${requestId}/accept`, {
+        method: 'POST'
+      });
+      
+      if (response.ok) {
+        toast.success('Connection request accepted');
+        fetchConnections(); // Refresh the data
+      } else {
+        throw new Error('Failed to accept connection');
+      }
+    } catch (error) {
+      console.error('Error accepting connection:', error);
+      toast.error('Failed to accept connection request');
+    }
+  };
+
+  const handleRejectConnection = async (requestId) => {
+    try {
+      const response = await fetch(`/api/connections/${requestId}/reject`, {
+        method: 'POST'
+      });
+      
+      if (response.ok) {
+        toast.success('Connection request rejected');
+        fetchConnections(); // Refresh the data
+      } else {
+        throw new Error('Failed to reject connection');
+      }
+    } catch (error) {
+      console.error('Error rejecting connection:', error);
+      toast.error('Failed to reject connection request');
+    }
+  };
 
   const handlePostCreated = (newPost) => {
     setPosts(prev => [newPost, ...prev]);
@@ -109,37 +180,6 @@ export default function FeedPage() {
     setPosts(prev => prev.map(post => 
       post._id === updatedPost._id ? { ...post, ...updatedPost } : post
     ));
-  };
-
-  const fetchPeople = async () => {
-    try {
-      setLoadingPeople(true);
-      const res = await fetch('/api/users/all');
-      if (!res.ok) throw new Error('Failed to fetch users');
-      const data = await res.json();
-      setPeople(data);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoadingPeople(false);
-    }
-  };
-
-  const handleConnect = async (recipientId) => {
-    try {
-      const res = await fetch('/api/connections/request', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ recipientId })
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.error || 'Failed to send request');
-      }
-      toast.success('Connection request sent');
-    } catch (e) {
-      toast.error(e.message);
-    }
   };
 
   if (!isLoaded || !user) {
@@ -161,13 +201,12 @@ export default function FeedPage() {
           <p className="text-gray-400 text-sm">Connect and share with the community</p>
         </div>
 
-        {/* Filter Toggle */}
-        <div className="mb-6 flex items-center space-x-4 bg-gray-800/50 backdrop-blur-sm border border-emerald-900/30 rounded-lg p-2">
-          <Filter className="w-4 h-4 text-emerald-400" />
+        {/* Tab Navigation */}
+        <div className="mb-6 flex items-center space-x-2 bg-gray-800/50 backdrop-blur-sm border border-emerald-900/30 rounded-lg p-2">
           <button
-            onClick={() => setFilter("all")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              filter === "all"
+            onClick={() => setActiveTab("all")}
+            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              activeTab === "all"
                 ? "bg-emerald-500 text-white"
                 : "text-gray-400 hover:text-emerald-400"
             }`}
@@ -175,83 +214,147 @@ export default function FeedPage() {
             All Posts
           </button>
           <button
-            onClick={() => setFilter("connections")}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              filter === "connections"
+            onClick={() => setActiveTab("my-posts")}
+            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              activeTab === "my-posts"
                 ? "bg-emerald-500 text-white"
                 : "text-gray-400 hover:text-emerald-400"
             }`}
           >
-            My Connections
+            My Posts
+          </button>
+          <button
+            onClick={() => setActiveTab("connections")}
+            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              activeTab === "connections"
+                ? "bg-emerald-500 text-white"
+                : "text-gray-400 hover:text-emerald-400"
+            }`}
+          >
+            Connections
           </button>
         </div>
 
-        {/* People You May Know */}
-        <div className="mb-6 bg-gray-800/50 backdrop-blur-sm border border-emerald-900/30 rounded-xl p-4">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-white font-semibold">People you may know</h2>
-            <button
-              onClick={fetchPeople}
-              className="text-xs text-emerald-400 hover:text-emerald-300"
-            >
-              Refresh
-            </button>
-          </div>
-          {loadingPeople ? (
-            <div className="text-gray-400 text-sm">Loading...</div>
-          ) : people.length === 0 ? (
-            <div className="text-gray-500 text-sm">No suggestions right now.</div>
-          ) : (
-            <div className="grid grid-cols-2 gap-3">
-              {people.slice(0, 6).map(p => (
-                <div key={p.id} className="flex items-center space-x-3 bg-gray-900/40 border border-emerald-900/30 rounded-lg p-3">
-                  <img src={p.image_url || '/default-avatar.png'} alt={p.firstName} className="w-8 h-8 rounded-full border border-emerald-500/30" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm truncate">{p.firstName} {p.lastName}</p>
-                    <p className="text-gray-500 text-xs truncate">@{p.userName}</p>
-                  </div>
-                  <button
-                    onClick={() => handleConnect(p.id)}
-                    className="flex items-center space-x-1 text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded"
-                  >
-                    <UserPlus className="w-3 h-3" />
-                    <span>Connect</span>
-                  </button>
+        {/* Post Composer - Only show for All Posts and My Posts tabs */}
+        {activeTab !== "connections" && (
+          <PostComposer onPostCreated={handlePostCreated} />
+        )}
+
+        {/* Content based on active tab */}
+        {activeTab === "connections" ? (
+          <div className="mt-6 space-y-6">
+            {/* Pending Connection Requests */}
+            {pendingRequests.length > 0 && (
+              <div className="bg-gray-800/50 backdrop-blur-sm border border-emerald-900/30 rounded-xl p-6">
+                <h2 className="text-xl font-semibold text-emerald-400 mb-4">
+                  Pending Requests ({pendingRequests.length})
+                </h2>
+                <div className="space-y-3">
+                  {pendingRequests.map((request) => (
+                    <div
+                      key={request._id}
+                      className="flex items-center justify-between p-4 bg-gray-900/50 rounded-lg border border-gray-700/50"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <img
+                          src={request.requester?.image_url || '/default-avatar.png'}
+                          alt={request.requester?.userName || 'User'}
+                          className="w-12 h-12 rounded-full object-cover"
+                        />
+                        <div>
+                          <p className="text-white font-medium">
+                            {request.requester?.firstName} {request.requester?.lastName}
+                          </p>
+                          <p className="text-gray-400 text-sm">@{request.requester?.userName}</p>
+                        </div>
+                      </div>
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleAcceptConnection(request._id)}
+                          className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-sm font-medium transition-colors"
+                        >
+                          Accept
+                        </button>
+                        <button
+                          onClick={() => handleRejectConnection(request._id)}
+                          className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg text-sm font-medium transition-colors"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+            )}
+
+            {/* My Connections */}
+            <div className="bg-gray-800/50 backdrop-blur-sm border border-emerald-900/30 rounded-xl p-6">
+              <h2 className="text-xl font-semibold text-emerald-400 mb-4">
+                My Connections ({connections.length})
+              </h2>
+              {connections.length === 0 && !isLoading && (
+                <p className="text-gray-400 text-center py-8">No connections yet</p>
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {connections.map((connection) => (
+                  <div
+                    key={connection._id}
+                    className="flex items-center space-x-3 p-4 bg-gray-900/50 rounded-lg border border-gray-700/50 hover:border-emerald-500/30 transition-colors"
+                  >
+                    <img
+                      src={connection.user?.image_url || '/default-avatar.png'}
+                      alt={connection.user?.userName || 'User'}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                    <div className="flex-1">
+                      <p className="text-white font-medium">
+                        {connection.user?.firstName} {connection.user?.lastName}
+                      </p>
+                      <p className="text-gray-400 text-sm">@{connection.user?.userName}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          )}
-        </div>
 
-        {/* Post Composer */}
-        <PostComposer onPostCreated={handlePostCreated} />
+            {isLoading && (
+              <div className="flex justify-center py-12">
+                <Loader2 className="w-8 h-8 text-emerald-400 animate-spin" />
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="mt-6 space-y-6">
+            {posts.length === 0 && !isLoading && (
+              <div className="text-center py-12 bg-gray-800/30 border border-emerald-900/30 rounded-xl">
+                <p className="text-gray-400">
+                  {activeTab === "my-posts"
+                    ? "You haven't created any posts yet. Share something with the community!"
+                    : "No posts yet. Be the first to share something!"}
+                </p>
+              </div>
+            )}
 
-        {/* Posts Feed */}
-        <div className="mt-6 space-y-6">
-          {posts.length === 0 && !isLoading && (
-            <div className="text-center py-12 bg-gray-800/30 border border-emerald-900/30 rounded-xl">
-              <p className="text-gray-400">No posts yet. Be the first to share something!</p>
-            </div>
-          )}
+            {posts.map(post => (
+              <PostCard
+                key={post._id}
+                post={post}
+                onDelete={handlePostDeleted}
+                onUpdate={handlePostUpdated}
+              />
+            ))}
 
-          {posts.map(post => (
-            <PostCard
-              key={post._id}
-              post={post}
-              onDelete={handlePostDeleted}
-              onUpdate={handlePostUpdated}
-            />
-          ))}
+            {isLoading && posts.length > 0 && (
+              <div className="flex justify-center py-8">
+                <Loader2 className="w-6 h-6 text-emerald-400 animate-spin" />
+              </div>
+            )}
 
-          {isLoading && posts.length > 0 && (
-            <div className="flex justify-center py-8">
-              <Loader2 className="w-6 h-6 text-emerald-400 animate-spin" />
-            </div>
-          )}
-
-          {/* Infinite scroll trigger */}
-          <div ref={observerTarget} className="h-4" />
-        </div>
+            {/* Infinite scroll trigger */}
+            <div ref={observerTarget} className="h-4" />
+          </div>
+        )}
       </div>
     </div>
   );

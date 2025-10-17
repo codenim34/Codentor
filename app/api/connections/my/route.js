@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
 import { connect } from '@/lib/mongodb/mongoose';
 import Connection from '@/lib/models/connectionModel';
-import User from '@/lib/models/userModel';
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient } from '@clerk/nextjs/server';
 
 export async function GET() {
   try {
     await connect();
     
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -24,32 +23,46 @@ export async function GET() {
       ]
     }).sort({ updatedAt: -1 });
 
+    if (connections.length === 0) {
+      return NextResponse.json([]);
+    }
+
     // Get unique user IDs
     const userIds = connections.map(conn => 
       conn.requesterId === userId ? conn.recipientId : conn.requesterId
     );
 
-    // Fetch user details
-    const users = await User.find({ clerkId: { $in: userIds } });
+    // Fetch user details from Clerk
+    const client = await clerkClient();
+    const usersPromises = userIds.map(id => client.users.getUser(id).catch(() => null));
+    const users = await Promise.all(usersPromises);
     
     // Create user map
-    const userMap = new Map(users.map(user => [user.clerkId, user]));
+    const userMap = new Map(
+      users
+        .filter(user => user !== null)
+        .map(user => [user.id, user])
+    );
 
     // Combine connection data with user details
     const connectionsWithUsers = connections.map(conn => {
       const connectedUserId = conn.requesterId === userId ? conn.recipientId : conn.requesterId;
-      const user = userMap.get(connectedUserId);
+      const clerkUser = userMap.get(connectedUserId);
       
       return {
         _id: conn._id,
         userId: connectedUserId,
-        userName: user?.userName || 'Unknown',
-        firstName: user?.firstName || '',
-        lastName: user?.lastName || '',
-        image_url: user?.image_url || '',
+        user: {
+          id: connectedUserId,
+          userName: clerkUser?.username || clerkUser?.emailAddresses[0]?.emailAddress?.split('@')[0] || 'user',
+          firstName: clerkUser?.firstName || 'User',
+          lastName: clerkUser?.lastName || '',
+          image_url: clerkUser?.imageUrl || '',
+          bio: clerkUser?.publicMetadata?.bio || ''
+        },
         connectedAt: conn.updatedAt
       };
-    });
+    }).filter(conn => conn.user.firstName !== 'User' || userMap.has(conn.userId));
 
     return NextResponse.json(connectionsWithUsers);
   } catch (error) {

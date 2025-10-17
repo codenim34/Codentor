@@ -1,9 +1,8 @@
-import { NextResponse } from 'next/server';
-import { connect } from '@/lib/mongodb/mongoose';
-import Post from '@/lib/models/postModel';
-import User from '@/lib/models/userModel';
-import Connection from '@/lib/models/connectionModel';
-import { auth } from '@clerk/nextjs/server';
+import { NextResponse } from "next/server";
+import { connect } from "@/lib/mongodb/mongoose";
+import Post from "@/lib/models/postModel";
+import Connection from "@/lib/models/connectionModel";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 
 export async function POST(request) {
   try {
@@ -71,13 +70,16 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
-    const filter = searchParams.get('filter') || 'all'; // 'all' or 'connections'
+    const filter = searchParams.get('filter') || 'all'; // 'all', 'connections', or 'my-posts'
     
     const skip = (page - 1) * limit;
 
     let query = {};
 
-    if (filter === 'connections') {
+    if (filter === 'my-posts') {
+      // Show only user's own posts
+      query.authorId = userId;
+    } else if (filter === 'connections') {
       // Get user's connections
       const connections = await Connection.find({
         $or: [
@@ -121,22 +123,29 @@ export async function GET(request) {
 
     const totalPosts = await Post.countDocuments(query);
 
-    // Get author details
+    // Get author details from Clerk
     const authorIds = [...new Set(posts.map(post => post.authorId))];
-    const authors = await User.find({ clerkId: { $in: authorIds } });
-    const authorMap = new Map(authors.map(author => [author.clerkId, author]));
+    const client = await clerkClient();
+    const authorsPromises = authorIds.map(id => client.users.getUser(id).catch(() => null));
+    const authors = await Promise.all(authorsPromises);
+    
+    const authorMap = new Map(
+      authors
+        .filter(author => author !== null)
+        .map(author => [author.id, author])
+    );
 
     // Combine post data with author details
     const postsWithAuthors = posts.map(post => {
-      const author = authorMap.get(post.authorId);
+      const clerkAuthor = authorMap.get(post.authorId);
       return {
         ...post.toObject(),
         author: {
           userId: post.authorId,
-          userName: author?.userName || 'Unknown',
-          firstName: author?.firstName || '',
-          lastName: author?.lastName || '',
-          image_url: author?.image_url || ''
+          userName: clerkAuthor?.username || clerkAuthor?.emailAddresses[0]?.emailAddress?.split('@')[0] || 'user',
+          firstName: clerkAuthor?.firstName || 'User',
+          lastName: clerkAuthor?.lastName || '',
+          image_url: clerkAuthor?.imageUrl || ''
         },
         likesCount: post.likes.length,
         sharesCount: post.shares.length,
