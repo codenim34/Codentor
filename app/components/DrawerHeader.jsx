@@ -32,7 +32,7 @@ const DrawerHeader = () => {
     { href: "/connections", label: "Connections", icon: Users },
     { href: "/learn", label: "Learn Hub", icon: GraduationCap },
     { href: "/codelab", label: "Code Lab", icon: FlaskConical },
-    { href: "/quests", label: "Challenges", icon: Trophy },
+    { href: "/interview", label: "Interviews", icon: Trophy },
   ];
 
   return (
