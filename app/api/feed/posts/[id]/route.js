@@ -8,7 +8,7 @@ export async function GET(request, { params }) {
   try {
     await connect();
     
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -58,7 +58,7 @@ export async function PUT(request, { params }) {
   try {
     await connect();
     
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -107,7 +107,7 @@ export async function DELETE(request, { params }) {
   try {
     await connect();
     
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },

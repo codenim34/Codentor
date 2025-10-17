@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, UserPlus, Check, Mail, MapPin, Calendar, Code2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import toast from "react-hot-toast";
@@ -10,6 +11,12 @@ export default function ProfileModal({ userId, onClose }) {
   const [isLoading, setIsLoading] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState('none'); // 'none', 'pending', 'connected'
   const [isConnecting, setIsConnecting] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
 
   useEffect(() => {
     fetchProfile();
@@ -56,23 +63,19 @@ export default function ProfileModal({ userId, onClose }) {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60]" onClick={onClose}>
-        <div className="bg-gray-800 border border-emerald-900/30 rounded-xl shadow-2xl w-full max-w-md mx-4 p-8" onClick={(e) => e.stopPropagation()}>
-          <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+  const modalContent = (
+    <>
+      {isLoading ? (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999]" onClick={onClose}>
+          <div className="bg-gray-800 border border-emerald-900/30 rounded-xl shadow-2xl w-full max-w-md mx-4 p-8" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+            </div>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  if (!profile) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[60]" onClick={onClose}>
-      <div className="bg-gray-800 border border-emerald-900/30 rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden" onClick={(e) => e.stopPropagation()}>
+      ) : profile ? (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999] p-4" onClick={onClose}>
+          <div className="bg-gray-800 border border-emerald-900/30 rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200" onClick={(e) => e.stopPropagation()}>
         {/* Header with Cover */}
         <div className="relative h-24 bg-gradient-to-r from-emerald-500 to-green-600">
           <button
@@ -183,7 +186,14 @@ export default function ProfileModal({ userId, onClose }) {
             </div>
           )}
         </div>
+        </div>
       </div>
-    </div>
+      ) : null}
+    </>
   );
+
+  // Use portal to render modal at document body level
+  if (!mounted) return null;
+  
+  return createPortal(modalContent, document.body);
 }
