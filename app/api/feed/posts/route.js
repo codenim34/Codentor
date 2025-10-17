@@ -9,7 +9,7 @@ export async function POST(request) {
   try {
     await connect();
     
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -50,7 +50,7 @@ export async function GET(request) {
   try {
     await connect();
     
-    const { userId } = auth();
+    const { userId } = await auth();
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },

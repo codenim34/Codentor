@@ -7,21 +7,15 @@ export default function SignUpPage() {
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-emerald-950 flex items-center justify-center p-4">
       <style jsx global>{`
         .cl-headerTitle {
-          display: none !important;
+          font-size: 1.5rem !important;
+          font-weight: 700 !important;
+          color: white !important;
+        }
+        .cl-headerTitle::after {
+          content: " to Codentor" !important;
         }
         .cl-headerSubtitle {
-          font-size: 1.5rem !important;
-          font-weight: 700 !important;
-          color: white !important;
-          margin-bottom: 0.5rem !important;
-        }
-        .cl-headerSubtitle::before {
-          content: "Create your Codentor account" !important;
-          display: block !important;
-          font-size: 1.5rem !important;
-          font-weight: 700 !important;
-          color: white !important;
-          margin-bottom: 0.5rem !important;
+          display: none !important;
         }
       `}</style>
       <div className="w-full max-w-md">

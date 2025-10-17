@@ -10,22 +10,6 @@ const isPublicRoute = createRouteMatcher([
   '/api/webhooks(.*)',
 ]);
 
-// Define protected routes that require authentication
-const isProtectedRoute = createRouteMatcher([
-  '/dashboard(.*)',
-  '/learn(.*)',
-  '/codelab(.*)',
-  '/dev-discuss(.*)',
-  '/quests(.*)',
-  '/roadmaps(.*)',
-  '/api/ai-assistant(.*)',
-  '/api/ai-search(.*)',
-  '/api/leaderboard(.*)',
-  '/api/quests(.*)',
-  '/api/questions(.*)',
-  '/api/attempts(.*)',
-]);
-
 // Define admin routes
 const isAdminRoute = createRouteMatcher([
   '/admin(.*)',

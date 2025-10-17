@@ -32,6 +32,12 @@ export default function FeedPage() {
       setIsLoading(true);
       const response = await fetch(`/api/feed/posts?page=${pageNum}&limit=10&filter=${currentFilter}`);
       
+      if (response.status === 401) {
+        // Unauthorized - redirect to sign-in
+        router.push('/sign-in');
+        return;
+      }
+      
       if (!response.ok) {
         throw new Error('Failed to fetch posts');
       }
@@ -48,10 +54,11 @@ export default function FeedPage() {
     } catch (error) {
       console.error('Error fetching posts:', error);
       toast.error('Failed to load posts');
+      setHasMore(false); // Stop infinite scroll on error
     } finally {
       setIsLoading(false);
     }
-  }, [filter]);
+  }, [filter, router]);
 
   useEffect(() => {
     if (user) {
