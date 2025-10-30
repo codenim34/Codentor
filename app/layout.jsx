@@ -13,6 +13,7 @@ const kanit = Kanit({
 });
 
 export const metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://codentor.vercel.app"),
   title: "Codentor - Master Code. Build Future.",
   description: "Your all-in-one platform to learn, practice, and excel in programming. Join a community of developers building the future of Bangladesh's tech ecosystem.",
   openGraph: {
@@ -36,6 +37,9 @@ export const metadata = {
   },
   manifest: "/site.webmanifest",
 };
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 export default function RootLayout({ children }) {
   return (
