@@ -12,13 +12,27 @@ const nextConfig = {
   // Ensure compatibility with Edge Runtime
   experimental: {
     serverActions: {
-      allowedOrigins: ['localhost:3000', '*.vercel.app'],
+      allowedOrigins: ["localhost:3000", "*.vercel.app"],
     },
   },
   // Optimize images
   images: {
-    domains: ['localhost'],
-    formats: ['image/avif', 'image/webp'],
+    domains: ["localhost"],
+    formats: ["image/avif", "image/webp"],
+  },
+  // Webpack configuration for Clerk compatibility
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      // Don't resolve 'fs' module on the client to prevent this error on build --> Error: Can't resolve 'fs'
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+        crypto: false,
+      };
+    }
+    return config;
   },
 };
 
