@@ -14,6 +14,8 @@ const nextConfig = {
     serverActions: {
       allowedOrigins: ["localhost:3000", "*.vercel.app"],
     },
+    // Force Clerk to use Node.js runtime instead of Edge Runtime
+    serverComponentsExternalPackages: ["@clerk/nextjs", "@clerk/backend"],
   },
   // Optimize images
   images: {
